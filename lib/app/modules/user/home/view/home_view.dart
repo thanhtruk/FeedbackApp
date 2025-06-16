@@ -42,7 +42,7 @@ class HomeView extends GetView<HomeController> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Chuyển sang màn thêm góp ý mới
+          Get.toNamed(AppRoutes.FEEDBACK_FORM);
         },
         backgroundColor: AppColors.bluePrimary,
         shape: CircleBorder(),
