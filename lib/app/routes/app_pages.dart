@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
 
+import '../modules/user/feedback_detail/binding/feedback_detail_binding.dart';
+import '../modules/user/feedback_detail/view/feedback_detail_view.dart';
 import '../modules/user/home/binding/home_binding.dart';
 import '../modules/user/home/view/home_view.dart';
 
@@ -16,7 +18,11 @@ class AppPages {
       page: () => const HomeView(),
       binding: HomeBinding(),
     ),
+    GetPage(
+      name: AppRoutes.FEEDBACK_DETAIL,
+      page: () => const FeedbackDetailView(),
+      binding: FeedbackDetailBinding(),
+    ),
     // Add other routes here as needed
   ];
 }
-

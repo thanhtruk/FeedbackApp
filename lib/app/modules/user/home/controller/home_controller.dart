@@ -1,30 +1,38 @@
 import 'package:get/get.dart';
 
-class HomeController extends GetxController {
-  // Observable counter variable
-  final counter = 0.obs;
+import '../../../../models/feedback_model.dart';
 
-  // Method to increment the counter
-  void incrementCounter() {
-    counter.value++;
-  }
+class HomeController extends GetxController {
+  // Danh sách các phản ánh
+  final feedbackList = <FeedbackModel>[].obs;
 
   @override
   void onInit() {
     super.onInit();
-    print("✅ HomeController initialized");
-    // Any initialization logic can go here
+
+    // Ví dụ dữ liệu ban đầu
+    feedbackList.addAll([
+      FeedbackModel(
+        id: '1',
+        title: 'Máy chiếu Phòng 015 TT bị mờ',
+        field: 'Phòng Quản lý Cơ sở vật chất',
+        requestCode: '161-06/25',
+        status: FeedbackStatus.processing,
+      ),
+      FeedbackModel(
+        id: '2',
+        title: 'Quạt hỏng phòng học A204',
+        field: 'Phòng CSVC',
+        requestCode: '161-06/20',
+        status: FeedbackStatus.resolved,
+      ),
+    ]);
   }
 
-  @override
-  void onReady() {
-    super.onReady();
-    // Logic that needs to run after the controller is ready can go here
-  }
-
-  @override
-  void onClose() {
-    // Cleanup logic can go here if needed
-    super.onClose();
+  void updateFeedbackStatus(String id, FeedbackStatus newStatus) {
+    final feedback = feedbackList.firstWhereOrNull((f) => f.id == id);
+    if (feedback != null) {
+      feedback.status.value = newStatus;
+    }
   }
 }

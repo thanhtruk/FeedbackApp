@@ -13,6 +13,7 @@ class FeedbackCard extends StatelessWidget {
       elevation: 4,
       borderRadius: BorderRadius.circular(12),
       child: Container(
+        width: MediaQuery.of(context).size.width,
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),

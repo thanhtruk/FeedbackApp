@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../../global_widgets/feedback_card.dart';
+import '../../../../routes/app_pages.dart';
 import '../controller/home_controller.dart';
 
 class HomeView extends GetView<HomeController> {
@@ -29,7 +30,12 @@ class HomeView extends GetView<HomeController> {
           itemBuilder: (context, index) {
             return Padding(
               padding: const EdgeInsets.only(bottom: 16.0),
-              child: FeedbackCard(),
+              child: GestureDetector(
+                onTap: () {
+                  Get.toNamed(AppRoutes.FEEDBACK_DETAIL);
+                },
+                child: FeedbackCard(),
+              ),
             );
           },
         ),
