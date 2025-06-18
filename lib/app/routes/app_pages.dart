@@ -1,3 +1,5 @@
+import 'package:feedback_app/app/modules/admin/dashboard/binding/dashboard_binding.dart';
+import 'package:feedback_app/app/modules/admin/dashboard/view/dashboard_view.dart';
 import 'package:feedback_app/app/modules/login/binding/login_binding.dart';
 import 'package:get/get.dart';
 
@@ -36,7 +38,11 @@ class AppPages {
       name: AppRoutes.LOGIN,
       page: () => LoginView(),
       binding: LoginBinding(),
-    ), // Placeholder for login
-    // Add other routes here as needed
+    ),
+    GetPage(
+      name: AppRoutes.ADMIN_DASHBOARD,
+      page: () => DashboardView(), // Placeholder for admin dashboard
+      binding: DashboardBinding(), // Assuming the same binding as home
+    ),
   ];
 }

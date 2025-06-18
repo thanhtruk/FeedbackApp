@@ -65,9 +65,14 @@ class LoginView extends GetView<LoginController> {
                             valueColor:
                                 AlwaysStoppedAnimation<Color>(Colors.white),
                           )
-                        : Text("Login",
+                        : Text(
+                            "Login",
                             style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold)),
+                              color: AppColors.lightWhite,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                   )),
             ],
           ),

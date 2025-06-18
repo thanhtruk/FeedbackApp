@@ -25,7 +25,7 @@ class LoginController extends GetxController {
         if (role == 'User') {
           Get.toNamed(AppRoutes.HOME);
         } else {
-          print("Admin logged in");
+          Get.toNamed(AppRoutes.ADMIN_DASHBOARD);
           // Get.offNamed('/home');
         }
       } else {
