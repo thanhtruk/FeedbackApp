@@ -1,5 +1,7 @@
+import 'package:feedback_app/app/modules/login/binding/login_binding.dart';
 import 'package:get/get.dart';
 
+import '../modules/login/view/login_view.dart';
 import '../modules/user/feedback_detail/binding/feedback_detail_binding.dart';
 import '../modules/user/feedback_detail/view/feedback_detail_view.dart';
 import '../modules/user/feedback_form/binding/feedback_form_binding.dart';
@@ -12,7 +14,7 @@ part 'app_routes.dart';
 class AppPages {
   AppPages._();
 
-  static const INITIAL = AppRoutes.HOME;
+  static const INITIAL = AppRoutes.LOGIN;
 
   static final routes = [
     GetPage(
@@ -30,6 +32,11 @@ class AppPages {
       page: () => FeedbackFormView(),
       binding: FeedbackFormBinding(),
     ),
+    GetPage(
+      name: AppRoutes.LOGIN,
+      page: () => LoginView(),
+      binding: LoginBinding(),
+    ), // Placeholder for login
     // Add other routes here as needed
   ];
 }

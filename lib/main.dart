@@ -1,8 +1,8 @@
-import 'package:feedback_app/app/constants/app_colors.dart';
-import 'package:feedback_app/app/modules/user/home/binding/home_binding.dart';
 import 'package:feedback_app/app/routes/app_pages.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
+import 'app/modules/login/binding/login_binding.dart';
 
 void main() {
   runApp(const MyApp());
@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       initialRoute: AppPages.INITIAL,
       getPages: AppPages.routes,
-      initialBinding: HomeBinding(),
+      initialBinding: LoginBinding(),
     );
   }
 }
