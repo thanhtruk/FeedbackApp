@@ -1,6 +1,7 @@
 import 'package:feedback_app/app/modules/user/feedback_form/models/send_email_model.dart';
 
 import '../../../../models/feedback_model.dart';
+import '../../../../models/question_model.dart';
 import '../models/clauses_model.dart';
 import '../models/field_model.dart';
 import '../models/sarcasm_model.dart';
@@ -28,11 +29,14 @@ class FeedbackFormRepository {
     return await FeedbackFormService.detectSentimentFromText(text);
   }
 
-  Future<FeedbackModel> submitFeedback(FeedbackModel feedback) async {
+  Future<String> submitFeedback(FeedbackModel feedback) async {
     return await FeedbackFormService.submitFeedback(feedback);
   }
 
-  //send email
+  Future<String> submitQuestion(QuestionModel question) async {
+    return await FeedbackFormService.submitQuestion(question);
+  }
+
   Future<List<String>> sendEmail(SendEmailModel infor) async {
     return await FeedbackFormService.sendEmail(infor);
   }

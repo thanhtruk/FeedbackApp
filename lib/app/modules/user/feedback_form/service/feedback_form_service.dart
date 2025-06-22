@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:feedback_app/app/models/question_model.dart';
 import 'package:feedback_app/app/modules/user/feedback_form/models/sarcasm_model.dart';
 import 'package:feedback_app/app/modules/user/feedback_form/models/send_email_model.dart';
 import 'package:http/http.dart' as http;
@@ -95,7 +96,7 @@ class FeedbackFormService {
     }
   }
 
-  static Future<FeedbackModel> submitFeedback(FeedbackModel feedback) async {
+  static Future<String> submitFeedback(FeedbackModel feedback) async {
     final url = Uri.parse('http://10.0.2.2:5000/feedback');
 
     final headers = {'Content-Type': 'application/json'};
@@ -104,15 +105,36 @@ class FeedbackFormService {
     try {
       final response = await http.post(url, headers: headers, body: body);
 
-      if (response.statusCode == 200) {
-        return FeedbackModel.fromJson(jsonDecode(response.body));
+      if (response.statusCode == 201) {
+        return jsonDecode(response.body)['id'] as String;
       } else {
         print('Error: ${response.statusCode} - ${response.body}');
-        return FeedbackModel();
+        return '';
       }
     } catch (e) {
       print('Exception: $e');
-      return FeedbackModel();
+      return '';
+    }
+  }
+
+  static Future<String> submitQuestion(QuestionModel question) async {
+    final url = Uri.parse('http://10.0.2.2:5000/question');
+
+    final headers = {'Content-Type': 'application/json'};
+    final body = jsonEncode(question.toJson());
+
+    try {
+      final response = await http.post(url, headers: headers, body: body);
+
+      if (response.statusCode == 201) {
+        return jsonDecode(response.body)['id'] as String;
+      } else {
+        print('Error: ${response.statusCode} - ${response.body}');
+        return '';
+      }
+    } catch (e) {
+      print('Exception: $e');
+      return '';
     }
   }
 

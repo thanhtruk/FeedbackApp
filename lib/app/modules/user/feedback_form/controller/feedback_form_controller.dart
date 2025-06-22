@@ -1,3 +1,4 @@
+import 'package:feedback_app/app/models/question_model.dart';
 import 'package:feedback_app/app/modules/user/feedback_form/models/sarcasm_model.dart';
 import 'package:feedback_app/app/modules/user/feedback_form/repository/feedback_form_repository.dart';
 import 'package:flutter/cupertino.dart';
@@ -50,7 +51,6 @@ class FeedbackFormController extends GetxController {
         fieldDetails: [],
         clausesSentiment: {},
         status: "Đang chờ duyệt",
-        createdAt: DateTime.now().toIso8601String(),
         response: null,
         content: contentController.text,
       );
@@ -113,11 +113,41 @@ class FeedbackFormController extends GetxController {
       }).catchError((error) {
         Get.snackbar("Lỗi", "Không thể gửi góp ý. Vui lòng thử lại sau.");
       });
-    } else if (selectedType.value == "góp ý") {
-      if (contentController.text.length < 20) {
-        Get.snackbar("Lỗi", "Nội dung góp ý phải ít nhất 20 ký tự.");
-        return;
+    } else if (selectedType.value == "Câu hỏi") {
+      QuestionModel question = QuestionModel(
+        title: titleController.text,
+        field: selectedField.value,
+        fieldDetails: [],
+        status: "Đang chờ duyệt",
+        response: null,
+        content: contentController.text,
+      );
+
+      Field field = await feedbackFormRepository
+          .detectFieldFromText(contentController.text);
+
+      print("Detected field: ${field.lable}, details: ${field.fieldDetails}");
+      question.fieldDetails = field.fieldDetails;
+
+      if (selectedField.value == "Khác" && field.lable != "Khác") {
+        question.field = field.lable;
+        question.status = "Đang xử lý";
+      } else if (selectedField.value != "Khác" &&
+          selectedField.value == field.lable) {
+        question.field = selectedField.value;
+        question.status = "Đang xử lý";
       }
+
+      if (question.status == "Đang xử lý") {
+        sendEmail(question.field!, contentController.text,
+            question.title ?? 'Câu hỏi từ người dùng');
+      }
+
+      feedbackFormRepository.submitQuestion(question).then((value) {
+        showFeedbackSuccessDialog();
+      }).catchError((error) {
+        Get.snackbar("Lỗi", "Không thể gửi câu hỏi. Vui lòng thử lại sau.");
+      });
     }
 
     // TODO: Gửi dữ liệu lên server hoặc xử lý logic khác
