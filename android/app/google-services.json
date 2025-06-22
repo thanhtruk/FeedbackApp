@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "97753937817",
+    "project_id": "feedbach-system",
+    "storage_bucket": "feedbach-system.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:97753937817:android:632587424007829dc98508",
+        "android_client_info": {
+          "package_name": "hsu.feedback"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAex4EUlxLq7IEPhBwWD6kFeg3jrzb67mc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
