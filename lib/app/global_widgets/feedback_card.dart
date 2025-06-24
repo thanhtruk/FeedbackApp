@@ -1,11 +1,11 @@
+import 'package:feedback_app/app/models/feedback_model.dart';
 import 'package:flutter/material.dart';
 
 import '../constants/app_colors.dart';
 
 class FeedbackCard extends StatelessWidget {
-  const FeedbackCard({
-    super.key,
-  });
+  FeedbackModel feedback;
+  FeedbackCard({Key? key, required this.feedback}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -23,15 +23,15 @@ class FeedbackCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Máy chiếu Phòng 015 TT bị mờ',
+              feedback.title ?? 'Góp ý của sinh viên',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
               ),
             ),
             SizedBox(height: 8),
-            Text('Mã yêu cầu: 161-06/25'),
-            Text('Phòng/ban xử lý: Phòng Quản lý Cơ sở vật chất'),
+            Text('Mã yêu cầu: ${feedback.id}'),
+            Text('Phòng/ban xử lý: ${feedback.field}'),
             SizedBox(height: 12),
             Container(
               padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
@@ -54,7 +54,7 @@ class FeedbackCard extends StatelessWidget {
                   Icon(Icons.circle, size: 12, color: AppColors.bluePrimary),
                   const SizedBox(width: 8),
                   Text(
-                    'Đang xử lý',
+                    feedback.status ?? 'Đang chờ duyệt',
                     style: TextStyle(
                       color: AppColors.black,
                       fontWeight: FontWeight.w500,

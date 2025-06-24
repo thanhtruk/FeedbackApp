@@ -49,7 +49,7 @@ class FeedbackFormController extends GetxController {
         title: titleController.text,
         field: selectedField.value,
         fieldDetails: [],
-        clausesSentiment: {},
+        clausesSentiment: [],
         status: "Đang chờ duyệt",
         response: null,
         content: contentController.text,
@@ -74,9 +74,11 @@ class FeedbackFormController extends GetxController {
           "Detected sarcasm: ${sarcasm.isSarcasm}, probability: ${sarcasm.probability}");
       if (sarcasm.isSarcasm && sarcasm.probability > 0.6) {
         //Đánh giá mỉa mai
-        feedback.clausesSentiment = {
-          contentController.text: "Tiêu cực",
-        };
+        feedback.clausesSentiment = [
+          {
+            contentController.text: "Tiêu cực",
+          }
+        ];
         if (feedback.status == "Đang xử lý") {
           sendEmail(feedback.field!, contentController.text,
               feedback.title ?? 'Góp ý từ người dùng');
@@ -91,19 +93,24 @@ class FeedbackFormController extends GetxController {
           Sentiment sentiment =
               await feedbackFormRepository.detectSentimentFromText(clause);
           print("Detected sentiment: ${sentiment.lable}");
-          // Xử lý từng câu theo sentiment
-          if (sentiment.probability > 0.6) {
-            feedback.clausesSentiment![clause] = sentiment.lable;
-          } else {
-            feedback.clausesSentiment![clause] = "chưa xác định";
+
+          final label =
+              (sentiment.probability > 0.6) ? sentiment.lable : "chưa xác định";
+          feedback.clausesSentiment!.add({clause: label});
+
+          if (label == "chưa xác định") {
             feedback.status = "Đang chờ duyệt";
           }
         }
-        if (feedback.clausesSentiment!.containsValue("Tiêu cực") &&
-            feedback.status == "Đang xử lý") {
+
+// Kiểm tra nếu có ít nhất 1 câu Tiêu cực
+        final hasNegative = feedback.clausesSentiment!
+            .any((map) => map.containsValue("Tiêu cực"));
+
+        if (hasNegative && feedback.status == "Đang xử lý") {
           sendEmail(
               feedback.field!,
-              formatClausesAsNumberedList(
+              formatClausesAsNumberedListFromListMap(
                   feedback.clausesSentiment!, contentController.text),
               feedback.title ?? 'Góp ý từ người dùng');
         }
@@ -235,8 +242,8 @@ class FeedbackFormController extends GetxController {
   ''';
   }
 
-  String formatClausesAsNumberedList(
-      Map<String, String> map, String originalText) {
+  String formatClausesAsNumberedListFromListMap(
+      List<Map<String, String>> listMap, String originalText) {
     String result = '';
 
     result += '<h4 style="color: black;">- Bản gốc:</h4>\n';
@@ -246,17 +253,17 @@ class FeedbackFormController extends GetxController {
     result += '<h4 style="color: black;">- Các mệnh đề và cảm xúc:</h4>\n';
     result += '<ol>\n';
 
-    int index = 1;
-    map.forEach((clause, sentiment) {
-      final isNegative = sentiment.toLowerCase().contains("tiêu cực");
-      final emoji = isNegative ? '❗' : '';
-      final style = isNegative
-          ? 'color:red; font-weight:bold;'
-          : 'color:green; font-weight:bold;';
-      result +=
-          '<li style="color: black;">$clause: <span style="$style">$emoji $sentiment</span></li>\n';
-      index++;
-    });
+    for (var item in listMap) {
+      item.forEach((clause, sentiment) {
+        final isNegative = sentiment.toLowerCase().contains("tiêu cực");
+        final emoji = isNegative ? '❗' : '';
+        final style = isNegative
+            ? 'color:red; font-weight:bold;'
+            : 'color:green; font-weight:bold;';
+        result +=
+            '<li style="color: black;">$clause: <span style="$style">$emoji $sentiment</span></li>\n';
+      });
+    }
 
     result += '</ol>\n';
 

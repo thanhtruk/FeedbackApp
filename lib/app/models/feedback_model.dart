@@ -3,7 +3,7 @@ class FeedbackModel {
   String? id;
   String? field;
   List<String>? fieldDetails;
-  Map<String, String>? clausesSentiment;
+  List<Map<String, String>>? clausesSentiment;
   String? status;
   String? createdAt;
   String? response;
@@ -22,7 +22,6 @@ class FeedbackModel {
   });
 
   factory FeedbackModel.fromJson(Map<String, dynamic> json) {
-    print(json['clausesSentiment'].runtimeType);
     return FeedbackModel(
       title: json['title'] as String?,
       id: json['id'] as String?,
@@ -30,11 +29,13 @@ class FeedbackModel {
       fieldDetails: (json['field_detail'] as List<dynamic>?)
           ?.map((item) => item as String)
           .toList(),
-      clausesSentiment: json['clausesSentiment'] != null
-          ? Map<String, String>.from(json['clausesSentiment'])
+      clausesSentiment: json['clauses_sentiment'] != null
+          ? (json['clauses_sentiment'] as List<dynamic>)
+              .map((e) => Map<String, String>.from(e as Map))
+              .toList()
           : null,
       status: json['status'] as String?,
-      createdAt: json['created_at'] as String?,
+      createdAt: json['create_at'] as String?,
       response: json['response'] as String?,
       content: json['content'] as String?,
     );

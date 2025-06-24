@@ -1,8 +1,10 @@
 import 'package:feedback_app/app/modules/admin/dashboard/binding/dashboard_binding.dart';
 import 'package:feedback_app/app/modules/admin/dashboard/view/dashboard_view.dart';
+import 'package:feedback_app/app/modules/admin/feedback_list/view/feedback_list_view.dart';
 import 'package:feedback_app/app/modules/login/binding/login_binding.dart';
 import 'package:get/get.dart';
 
+import '../modules/admin/feedback_list/binding/feedback_list_binding.dart';
 import '../modules/login/view/login_view.dart';
 import '../modules/user/feedback_detail/binding/feedback_detail_binding.dart';
 import '../modules/user/feedback_detail/view/feedback_detail_view.dart';
@@ -43,6 +45,11 @@ class AppPages {
       name: AppRoutes.ADMIN_DASHBOARD,
       page: () => DashboardView(), // Placeholder for admin dashboard
       binding: DashboardBinding(), // Assuming the same binding as home
+    ),
+    GetPage(
+      name: AppRoutes.ADMIN_FEEDBACK_LIST,
+      page: () => FeedbackListView(), // Placeholder for admin feedback list
+      binding: FeedbackListBinding(), // Assuming the same binding as home
     ),
   ];
 }

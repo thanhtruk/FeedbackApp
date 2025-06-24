@@ -4,10 +4,10 @@ import 'package:get/get.dart';
 
 import '../../../../global_widgets/feedback_card.dart';
 import '../../../../routes/app_pages.dart';
-import '../controller/home_controller.dart';
+import '../controller/feedback_list_controller.dart';
 
-class HomeView extends GetView<HomeController> {
-  const HomeView({super.key});
+class FeedbackListView extends GetView<FeedbackListController> {
+  const FeedbackListView({super.key});
 
   @override
   Widget build(BuildContext context) {

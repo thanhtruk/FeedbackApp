@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../../constants/app_colors.dart';
+import '../../../../routes/app_pages.dart';
 import '../controller/dashboard_controller.dart';
-import '../model/feedback_issue.dart'; 
+import '../model/yearly_feedback_stats.dart';
 
 class DashboardView extends GetView<DashboardController> {
   const DashboardView({super.key});
@@ -28,7 +29,11 @@ class DashboardView extends GetView<DashboardController> {
         padding: EdgeInsets.all(16),
         child: Column(
           children: [
-            _buildPieChart(),
+            Obx(() {
+              return controller.issues.isEmpty
+                  ? Center(child: CircularProgressIndicator())
+                  : buildPieCharts(controller.yearlyFeedbackStats);
+            }),
             SizedBox(height: 20),
             _buildTopIssuesSection(),
             SizedBox(height: 20),
@@ -52,74 +57,79 @@ class DashboardView extends GetView<DashboardController> {
     );
   }
 
-  Widget _buildPieChart() {
-    return Obx(() {
-      final total = controller.totalFeedback.value.toDouble();
-      final positive = controller.positiveFeedback.value.toDouble();
-      final negative = controller.negativeFeedback.value.toDouble();
+  Widget buildPieCharts(List<YearlyFeedbackStats> stats) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: stats.map((stat) {
+        var sections = <PieChartSectionData>[
+          if (stat.positive > 0)
+            PieChartSectionData(
+              value: stat.positive.toDouble(),
+              title: 'Tích cực\n${stat.positive}',
+              color: AppColors.positiveStatColor,
+              radius: 70,
+              titleStyle:
+                  const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+            ),
+          if (stat.negative > 0)
+            PieChartSectionData(
+              value: stat.negative.toDouble(),
+              title: 'Tiêu cực\n${stat.negative}',
+              color: AppColors.negativeStatColor,
+              radius: 70,
+              titleStyle:
+                  const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+            ),
+          if (stat.neutral > 0)
+            PieChartSectionData(
+              value: stat.neutral.toDouble(),
+              title: 'Trung lập\n${stat.neutral}',
+              color: AppColors.neutralStatColor,
+              radius: 70,
+              titleStyle:
+                  const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+            ),
+        ];
 
-      return Column(
-        children: [
-          Text(
-            'Thống kê số lượng góp ý\nNăm học 2024-2025',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(height: 12),
-          Stack(
-            alignment: Alignment.center,
-            children: [
-              SizedBox(
-                height: 250,
-                width: 250,
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const SizedBox(height: 20),
+            Text('Thống kê số lượng góp ý năm ${stat.year}',
+                style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.bluePrimary.withOpacity(0.8))),
+            const SizedBox(height: 10),
+            SizedBox(
+              height: 250,
+              child: Container(
+                margin:
+                    const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black12,
+                      blurRadius: 8,
+                      offset: Offset(0, 4),
+                    ),
+                  ],
+                ),
                 child: PieChart(
                   PieChartData(
-                    sectionsSpace: 0,
-                    centerSpaceRadius: 55,
-                    sections: [
-                      PieChartSectionData(
-                        value: negative,
-                        color: Colors.pinkAccent.withOpacity(0.8),
-                        radius: 60,
-                        title: '',
-                      ),
-                      PieChartSectionData(
-                        value: positive,
-                        color: AppColors.bluePrimary,
-                        radius: 60,
-                        title: '',
-                      ),
-                    ],
+                    sections: sections,
+                    centerSpaceRadius: 30,
+                    sectionsSpace: 2,
                   ),
-                  swapAnimationDuration: Duration(milliseconds: 300),
-                  swapAnimationCurve: Curves.easeInOut,
                 ),
               ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    '${total.toInt()}',
-                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(height: 4),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      _buildLegendDot(Colors.pinkAccent.withOpacity(0.8)),
-                      Text('${negative.toInt()}'),
-                      SizedBox(width: 16),
-                      _buildLegendDot(AppColors.bluePrimary),
-                      Text('${positive.toInt()}'),
-                    ],
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ],
-      );
-    });
+            ),
+          ],
+        );
+      }).toList(),
+    );
   }
 
   Widget _buildLegendDot(Color color) {
@@ -134,39 +144,146 @@ class DashboardView extends GetView<DashboardController> {
     );
   }
 
-  Widget _buildTopIssuesSection() {
-    return Obx(() {
-      final issues = controller.topIssues;
-
-      Map<String, List<FeedbackIssue>> grouped = {};
-      for (var issue in issues) {
-        grouped.putIfAbsent(issue.category, () => []).add(issue);
-      }
-
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: grouped.entries.map((entry) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                entry.key,
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+  Widget buildBarChart(List<YearlyFeedbackStats> stats) {
+    return BarChart(
+      BarChartData(
+        alignment: BarChartAlignment.spaceAround,
+        barGroups: stats.asMap().entries.map((entry) {
+          final index = entry.key;
+          final stat = entry.value;
+          return BarChartGroupData(
+            x: index,
+            barRods: [
+              BarChartRodData(
+                toY: safeDouble(stat.positive),
+                color: Colors.blue,
+                width: 8,
               ),
-              ...entry.value.map((issue) {
-                return ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  title: Text(issue.title),
-                  trailing: TextButton(
-                    onPressed: () {},
-                    child: Text('Chi tiết'),
-                  ),
-                );
-              }).toList(),
-              SizedBox(height: 10),
+              BarChartRodData(
+                toY: safeDouble(stat.negative),
+                color: Colors.red,
+                width: 8,
+              ),
+              BarChartRodData(
+                toY: safeDouble(stat.neutral),
+                color: Colors.grey,
+                width: 8,
+              ),
             ],
           );
         }).toList(),
+        titlesData: FlTitlesData(
+          bottomTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              getTitlesWidget: (value, meta) {
+                final index = safeInt(value, stats.length);
+                return SideTitleWidget(
+                  axisSide: meta.axisSide,
+                  space: 8,
+                  child: Text(
+                    stats[index].year,
+                    style: const TextStyle(fontSize: 10),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  double safeDouble(num? value) {
+    if (value == null || value.isNaN || value.isInfinite) return 0.0;
+    return value.toDouble();
+  }
+
+  int safeInt(double value, int max) {
+    if (value.isNaN || value.isInfinite) return 0;
+    final i = value.toInt();
+    return (i >= 0 && i < max) ? i : 0;
+  }
+
+  Widget _buildTopIssuesSection() {
+    return Obx(() {
+      final groups = controller.topIssueGroups;
+
+      if (groups.isEmpty) {
+        return Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Text('Không có vấn đề nổi bật nào.'),
+        );
+      }
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Text(
+              'Các vấn đề được sinh viên góp ý nhiều',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: AppColors.bluePrimary.withOpacity(0.8),
+              ),
+            ),
+          ),
+          SizedBox(height: 12),
+          ...groups.map((group) {
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Text(
+                      'Về ${group.category}',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                        color: Colors.grey[700],
+                      ),
+                    ),
+                  ),
+                  ...group.issues.map((issue) {
+                    return Container(
+                      margin: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black12,
+                            blurRadius: 4,
+                            offset: Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: ListTile(
+                        title: Text(issue.fieldDetail),
+                        trailing: TextButton(
+                          onPressed: () {
+                            Get.toNamed(
+                              AppRoutes.ADMIN_FEEDBACK_LIST,
+                              arguments: issue.feedbacks,
+                            );
+                          },
+                          child: Text('Chi tiết'),
+                        ),
+                      ),
+                    );
+                  }),
+                ],
+              ),
+            );
+          }),
+          SizedBox(height: 8),
+        ],
       );
     });
   }

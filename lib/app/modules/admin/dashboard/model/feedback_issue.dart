@@ -1,11 +1,21 @@
-class FeedbackIssue {
-  final String title;
-  final String category;
-  final int count;
+import '../../../../models/feedback_model.dart';
 
-  FeedbackIssue({
-    required this.title,
+class TopIssue {
+  final String fieldDetail;
+  final List<FeedbackModel> feedbacks;
+
+  TopIssue({
+    required this.fieldDetail,
+    required this.feedbacks,
+  });
+}
+
+class TopIssueGroup {
+  final String category; // field
+  final List<TopIssue> issues;
+
+  TopIssueGroup({
     required this.category,
-    required this.count,
+    required this.issues,
   });
 }

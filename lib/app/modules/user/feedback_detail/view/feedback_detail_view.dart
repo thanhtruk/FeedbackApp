@@ -27,7 +27,15 @@ class FeedbackDetailView extends GetView<FeedbackDetailController> {
         child: Column(
           children: [
             //Thông tin phản ánh + trạng thái
-            FeedbackCard(),
+            Obx(() {
+              final feedback = controller.selectedFeedback.value;
+              if (feedback == null) {
+                return const CircularProgressIndicator(); // hoặc SizedBox.shrink()
+              } else {
+                return FeedbackCard(feedback: feedback);
+              }
+            }),
+
             const SizedBox(height: 24),
             // Tiêu đề phản ánh
             Text(
@@ -52,10 +60,11 @@ class FeedbackDetailView extends GetView<FeedbackDetailController> {
                     color: Colors.grey[300],
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Text(
-                    'Máy chiếu bị mờ, khó nhìn rõ nội dung khi học.',
-                    style: TextStyle(fontSize: 14),
-                  ),
+                  child: Obx(() => Text(
+                        controller.selectedFeedback.value?.content ??
+                            'Nội dung phản ánh từ sinh viên sẽ được hiển thị ở đây.',
+                        style: const TextStyle(fontSize: 14),
+                      )),
                 ),
               ],
             ),
@@ -73,13 +82,14 @@ class FeedbackDetailView extends GetView<FeedbackDetailController> {
                     color: AppColors.bluePrimary,
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Text(
-                    'Thiết bị đã được kiểm tra và thay thế mới.',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                    ),
-                  ),
+                  child: Obx(() => Text(
+                        controller.selectedFeedback.value?.response ??
+                            'Phản hồi từ nhà trường sẽ được hiển thị ở đây.',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                        ),
+                      )),
                 ),
               ],
             ),
