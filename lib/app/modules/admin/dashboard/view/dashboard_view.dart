@@ -132,18 +132,6 @@ class DashboardView extends GetView<DashboardController> {
     );
   }
 
-  Widget _buildLegendDot(Color color) {
-    return Container(
-      margin: EdgeInsets.only(right: 4),
-      width: 10,
-      height: 10,
-      decoration: BoxDecoration(
-        color: color,
-        shape: BoxShape.circle,
-      ),
-    );
-  }
-
   Widget buildBarChart(List<YearlyFeedbackStats> stats) {
     return BarChart(
       BarChartData(

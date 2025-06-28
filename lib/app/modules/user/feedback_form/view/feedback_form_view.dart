@@ -117,11 +117,7 @@ class FeedbackFormView extends GetView<FeedbackFormController> {
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
-                      if (controller.agreeToTerms.value) {
-                        controller.submitFeedback();
-                      } else {
-                        Get.snackbar("Lỗi", "Bạn cần đồng ý với điều khoản.");
-                      }
+                      controller.submitFeedback();
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.bluePrimary,

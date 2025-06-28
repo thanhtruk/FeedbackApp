@@ -25,8 +25,26 @@ class HomeView extends GetView<HomeController> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Obx(
-          () => ListView.builder(
+        child: Obx(() {
+          if (controller.isLoading.value) {
+            return Center(
+              child: CircularProgressIndicator(
+                color: AppColors.bluePrimary,
+              ),
+            );
+          }
+          if (controller.feedbackList.isEmpty) {
+            return Center(
+              child: Text(
+                'Không có phản ánh nào',
+                style: TextStyle(
+                  color: AppColors.lightGrey,
+                  fontSize: 16,
+                ),
+              ),
+            );
+          }
+          return ListView.builder(
             itemCount: controller.feedbackList.length,
             itemBuilder: (context, index) {
               final feedback = controller.feedbackList[index];
@@ -37,14 +55,14 @@ class HomeView extends GetView<HomeController> {
                   onTap: () {
                     Get.toNamed(
                       AppRoutes.FEEDBACK_DETAIL,
-                      arguments: {'id': feedback.id},
+                      arguments: {'feedback': feedback},
                     );
                   },
                 ),
               );
             },
-          ),
-        ),
+          );
+        }),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {

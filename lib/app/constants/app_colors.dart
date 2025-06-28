@@ -9,4 +9,5 @@ abstract class AppColors {
   static final Color positiveStatColor = Color(0xffFF928A);
   static final Color negativeStatColor = Color(0xff8979FF);
   static final Color neutralStatColor = Color(0xff94959c);
+  static final Color lightGrey = Color(0xfff5f5f5);
 }

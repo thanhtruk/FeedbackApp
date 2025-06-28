@@ -2,6 +2,7 @@ import 'package:feedback_app/app/models/question_model.dart';
 import 'package:feedback_app/app/modules/user/feedback_form/models/sarcasm_model.dart';
 import 'package:feedback_app/app/modules/user/feedback_form/repository/feedback_form_repository.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../../models/feedback_model.dart';
@@ -18,9 +19,27 @@ class FeedbackFormController extends GetxController {
   final selectedField = RxnString();
   final selectedType = RxnString();
   final agreeToTerms = false.obs;
+  final isSending = false.obs;
 
   final titleController = TextEditingController();
   final contentController = TextEditingController();
+
+  @override
+  void onInit() {
+    super.onInit();
+    ever(isSending, (isSending) {
+      if (isSending) {
+        showIsSendingDialog();
+      } else {
+        Get.back(); // Đóng dialog khi gửi xong
+        titleController.clear();
+        contentController.clear();
+        selectedField.value = null;
+        selectedType.value = null;
+        agreeToTerms.value = false;
+      }
+    });
+  }
 
   @override
   void onClose() {
@@ -42,7 +61,7 @@ class FeedbackFormController extends GetxController {
       return;
     }
 
-    print(selectedType.value);
+    isSending.value = true;
 
     if (selectedType.value == "Đánh giá") {
       FeedbackModel feedback = FeedbackModel(
@@ -103,7 +122,7 @@ class FeedbackFormController extends GetxController {
           }
         }
 
-// Kiểm tra nếu có ít nhất 1 câu Tiêu cực
+        // Kiểm tra nếu có ít nhất 1 câu Tiêu cực
         final hasNegative = feedback.clausesSentiment!
             .any((map) => map.containsValue("Tiêu cực"));
 
@@ -116,6 +135,7 @@ class FeedbackFormController extends GetxController {
         }
       }
       feedbackFormRepository.submitFeedback(feedback).then((value) {
+        isSending.value = false;
         showFeedbackSuccessDialog();
       }).catchError((error) {
         Get.snackbar("Lỗi", "Không thể gửi góp ý. Vui lòng thử lại sau.");
@@ -151,14 +171,12 @@ class FeedbackFormController extends GetxController {
       }
 
       feedbackFormRepository.submitQuestion(question).then((value) {
+        isSending.value = false;
         showFeedbackSuccessDialog();
       }).catchError((error) {
         Get.snackbar("Lỗi", "Không thể gửi câu hỏi. Vui lòng thử lại sau.");
       });
     }
-
-    // TODO: Gửi dữ liệu lên server hoặc xử lý logic khác
-    Get.snackbar("Thành công", "Góp ý đã được gửi!");
   }
 
   //send email
@@ -304,6 +322,40 @@ class FeedbackFormController extends GetxController {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  void showIsSendingDialog() {
+    showCupertinoDialog(
+      context: Get.context!,
+      barrierDismissible: false, // tránh bị tắt khi chạm bên ngoài
+      builder: (_) => CupertinoAlertDialog(
+        title: const Text(
+          'Đang gửi góp ý',
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 17,
+          ),
+        ),
+        content: Padding(
+          padding: const EdgeInsets.only(top: 8.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: const [
+              Text(
+                'Vui lòng đợi trong giây lát, góp ý của bạn đang được gửi đi.',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 16),
+              CircularProgressIndicator(), // loading indicator
+            ],
+          ),
+        ),
       ),
     );
   }

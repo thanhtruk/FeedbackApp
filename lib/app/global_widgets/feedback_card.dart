@@ -5,6 +5,7 @@ import '../constants/app_colors.dart';
 
 class FeedbackCard extends StatelessWidget {
   FeedbackModel feedback;
+
   FeedbackCard({Key? key, required this.feedback}) : super(key: key);
 
   @override
@@ -32,6 +33,12 @@ class FeedbackCard extends StatelessWidget {
             SizedBox(height: 8),
             Text('Mã yêu cầu: ${feedback.id}'),
             Text('Phòng/ban xử lý: ${feedback.field}'),
+            //Hiển thị 2 dòng đầu tiên của nội dung
+            Text(
+              'Nội dung: ${feedback.content ?? 'Nội dung góp ý không có'}',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
             SizedBox(height: 12),
             Container(
               padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),

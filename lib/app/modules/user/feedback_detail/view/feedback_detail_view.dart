@@ -75,22 +75,27 @@ class FeedbackDetailView extends GetView<FeedbackDetailController> {
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Container(
-                  width: MediaQuery.of(context).size.width * 0.7,
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: AppColors.bluePrimary,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Obx(() => Text(
-                        controller.selectedFeedback.value?.response ??
-                            'Phản hồi từ nhà trường sẽ được hiển thị ở đây.',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
-                        ),
-                      )),
-                ),
+                Obx(() {
+                  final response = controller.selectedFeedback.value?.response;
+                  if (response == null || response.isEmpty) {
+                    return const SizedBox();
+                  }
+                  return Container(
+                    width: MediaQuery.of(context).size.width * 0.7,
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: AppColors.bluePrimary,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      response,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                      ),
+                    ),
+                  );
+                }),
               ],
             ),
 

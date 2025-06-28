@@ -19,8 +19,6 @@ class LoginController extends GetxController {
       isLoading.value = false;
       if (userAccounts[username.value] == password.value) {
         final role = username.value == 'admin' ? 'Admin' : 'User';
-        Get.snackbar("Login Success", "Welcome $role!",
-            backgroundColor: Colors.green, colorText: Colors.white);
         // Navigate to the home page or dashboard
         if (role == 'User') {
           Get.toNamed(AppRoutes.HOME);

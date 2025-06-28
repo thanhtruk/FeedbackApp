@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 class FeedbackService {
   // Example method to retrieve feedback
   static Future<List<FeedbackModel>> getAllFeedback({
-    int limit = 100,
+    int limit = 10,
     String? startAfterId = 'f1-06-23',
   }) async {
     // Gắn query parameters vào URI

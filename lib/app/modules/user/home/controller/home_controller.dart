@@ -6,6 +6,8 @@ import '../../../../models/feedback_model.dart';
 class HomeController extends GetxController {
   HomeRepository homeRepository = Get.find<HomeRepository>();
 
+  final isLoading = true.obs;
+
   // Danh sách các phản ánh
   final feedbackList = <FeedbackModel>[].obs;
 
@@ -17,10 +19,13 @@ class HomeController extends GetxController {
 
   Future<void> loadFeedbackData() async {
     try {
+      isLoading.value = true; // Bắt đầu tải dữ liệu
       final data = await homeRepository.fetchUserData();
-      feedbackList.assignAll(data); // data phải là Iterable<FeedbackModel>
+      feedbackList.assignAll(data); // Cập nhật danh sách phản ánh
     } catch (e) {
-      print('Lỗi khi tải dữ liệu: $e');
+      print('Error loading feedback data: $e');
+    } finally {
+      isLoading.value = false; // Kết thúc tải dữ liệu
     }
   }
 }

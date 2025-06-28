@@ -12,12 +12,7 @@ class FeedbackDetailController extends GetxController {
   void onInit() {
     super.onInit();
     if (Get.arguments != null) {
-      String id = Get.arguments['id'] as String;
-      loadFeedback(id);
+      selectedFeedback.value = Get.arguments['feedback'] as FeedbackModel?;
     }
-  }
-
-  void loadFeedback(String id) async {
-    selectedFeedback.value = await feedbackDetailRepository.getFeedbackbyId(id);
   }
 }

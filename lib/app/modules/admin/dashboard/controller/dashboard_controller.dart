@@ -35,7 +35,7 @@ class DashboardController extends GetxController {
       }
     }
 
-    // Lọc các detail có nhiều hơn 50 góp ý
+    // Lọc các detail có nhiều hơn 15 góp ý
     final List<TopIssueGroup> result = [];
 
     for (var entry in grouped.entries) {
