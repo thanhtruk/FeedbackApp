@@ -40,4 +40,8 @@ class FeedbackFormRepository {
   Future<List<String>> sendEmail(SendEmailModel infor) async {
     return await FeedbackFormService.sendEmail(infor);
   }
+
+  Future<String> cleanInput(String text) async {
+    return await FeedbackFormService.cleanInput(text);
+  }
 }

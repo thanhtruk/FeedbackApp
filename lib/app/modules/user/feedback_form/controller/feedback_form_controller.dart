@@ -63,6 +63,10 @@ class FeedbackFormController extends GetxController {
 
     isSending.value = true;
 
+    final cleanedContent =
+        await feedbackFormRepository.cleanInput(contentController.text);
+
+    print("Cleaned content: $cleanedContent");
     if (selectedType.value == "Đánh giá") {
       FeedbackModel feedback = FeedbackModel(
         title: titleController.text,
@@ -74,8 +78,9 @@ class FeedbackFormController extends GetxController {
         content: contentController.text,
       );
 
-      Field field = await feedbackFormRepository
-          .detectFieldFromText(contentController.text);
+      //Nhận diện lĩnh vực từ nội dung
+      Field field =
+          await feedbackFormRepository.detectFieldFromText(cleanedContent);
       print("Detected field: ${field.lable}, details: ${field.fieldDetails}");
       feedback.fieldDetails = field.fieldDetails;
 
@@ -87,8 +92,10 @@ class FeedbackFormController extends GetxController {
         feedback.field = selectedField.value;
         feedback.status = "Đang xử lý";
       }
-      Sarcasm sarcasm = await feedbackFormRepository
-          .detectSarcasmFromText(contentController.text);
+
+      //Nhận diện mỉa mai từ nội dung
+      Sarcasm sarcasm =
+          await feedbackFormRepository.detectSarcasmFromText(cleanedContent);
       print(
           "Detected sarcasm: ${sarcasm.isSarcasm}, probability: ${sarcasm.probability}");
       if (sarcasm.isSarcasm && sarcasm.probability > 0.6) {
@@ -104,10 +111,12 @@ class FeedbackFormController extends GetxController {
         }
       } else {
         //Đánh giá bình thường
-        Clauses clauses_list = await feedbackFormRepository
-            .splitTextIntoClauses(contentController.text);
+        //Tách nội dung thành các mệnh đề
+        Clauses clauses_list =
+            await feedbackFormRepository.splitTextIntoClauses(cleanedContent);
         print("Clauses detected: ${clauses_list.all_clauses}");
 
+        //Nhận diện cảm xúc của từng mệnh đề
         for (var clause in clauses_list.all_clauses) {
           Sentiment sentiment =
               await feedbackFormRepository.detectSentimentFromText(clause);
@@ -150,8 +159,9 @@ class FeedbackFormController extends GetxController {
         content: contentController.text,
       );
 
-      Field field = await feedbackFormRepository
-          .detectFieldFromText(contentController.text);
+      //Nhận diện lĩnh vực từ nội dung
+      Field field =
+          await feedbackFormRepository.detectFieldFromText(cleanedContent);
 
       print("Detected field: ${field.lable}, details: ${field.fieldDetails}");
       question.fieldDetails = field.fieldDetails;

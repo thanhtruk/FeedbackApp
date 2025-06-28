@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:feedback_app/app/models/question_model.dart';
 import 'package:feedback_app/app/modules/user/feedback_form/models/sarcasm_model.dart';
 import 'package:feedback_app/app/modules/user/feedback_form/models/send_email_model.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 
 import '../../../../models/feedback_model.dart';
@@ -157,5 +158,57 @@ class FeedbackFormService {
       print('Exception: $e');
       return [];
     }
+  }
+
+  static Future<String> cleanInput(String text) async {
+    //ky tu đặc biệt
+    final regex = RegExp(r'[!@#$%^&*(),.?":{}|<>]');
+
+    var apiKey =
+        await rootBundle.loadString('lib/app/assets/secret/gpt_api_key.txt');
+
+    var outputText = '';
+    String input_text = text.toLowerCase().replaceAll(regex, '');
+
+    final prompt = '''
+Bạn là một trợ lý xử lý ngôn ngữ tiếng Việt.
+
+Thực hiện các bước sau với dữ liệu đánh giá phía dưới:
+1. Sửa lỗi chính tả.
+3. Dịch sang tiếng Việt hoàn toàn, kể cả các từ mượn như teacher, lecturer, phòng lab...
+
+Trả về kết quả là đánh giá đã xử lý (không giải thích gì thêm)
+
+Dữ liệu:
+$input_text
+''';
+
+    try {
+      final response = await http.post(
+        Uri.parse('https://api.openai.com/v1/chat/completions'),
+        headers: {
+          'Authorization': 'Bearer $apiKey',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          "model": "gpt-4o-mini",
+          "temperature": 0.2,
+          "messages": [
+            {"role": "user", "content": prompt}
+          ]
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        outputText = data['choices'][0]['message']['content'];
+      } else {
+        print("Error from API: ${response.statusCode} - ${response.body}");
+      }
+    } catch (e) {
+      print("Exception: $e");
+    }
+
+    return outputText;
   }
 }
