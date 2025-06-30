@@ -20,18 +20,19 @@ class FeedbackService {
     );
 
     try {
-      final response = await http.get(uri);
+      final response = await http.get(uri).timeout(Duration(seconds: 10));
 
       if (response.statusCode == 200) {
         final List<dynamic> jsonData = jsonDecode(response.body);
         return jsonData.map((item) => FeedbackModel.fromJson(item)).toList();
       } else {
-        print('Error: ${response.statusCode} - ${response.body}');
+        print(
+            '[getAllFeedback 1] Error: ${response.statusCode} - ${response.body}');
         return [];
       }
     } catch (e) {
-      print('Exception: $e');
-      return [];
+      print('[getAllFeedback 2] Exception: $e');
+      rethrow;
     }
   }
 

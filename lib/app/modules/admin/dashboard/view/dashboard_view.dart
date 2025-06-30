@@ -57,6 +57,81 @@ class DashboardView extends GetView<DashboardController> {
     );
   }
 
+  // Widget buildPieCharts(List<YearlyFeedbackStats> stats) {
+  //   return Column(
+  //     crossAxisAlignment: CrossAxisAlignment.center,
+  //     children: stats.map((stat) {
+  //       var sections = <PieChartSectionData>[
+  //         if (stat.positive > 0)
+  //           PieChartSectionData(
+  //             value: stat.positive.toDouble(),
+  //             title: 'Tích cực\n${stat.positive}',
+  //             color: AppColors.positiveStatColor,
+  //             radius: 70,
+  //             titleStyle:
+  //                 const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+  //           ),
+  //         if (stat.negative > 0)
+  //           PieChartSectionData(
+  //             value: stat.negative.toDouble(),
+  //             title: 'Tiêu cực\n${stat.negative}',
+  //             color: AppColors.negativeStatColor,
+  //             radius: 70,
+  //             titleStyle:
+  //                 const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+  //           ),
+  //         if (stat.neutral > 0)
+  //           PieChartSectionData(
+  //             value: stat.neutral.toDouble(),
+  //             title: 'Trung lập\n${stat.neutral}',
+  //             color: AppColors.neutralStatColor,
+  //             radius: 70,
+  //             titleStyle:
+  //                 const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+  //           ),
+  //       ];
+  //
+  //       return Column(
+  //         crossAxisAlignment: CrossAxisAlignment.center,
+  //         children: [
+  //           const SizedBox(height: 20),
+  //           Text('Thống kê số lượng góp ý năm ${stat.year}',
+  //               style: TextStyle(
+  //                   fontSize: 16,
+  //                   fontWeight: FontWeight.bold,
+  //                   color: AppColors.bluePrimary.withOpacity(0.8))),
+  //           const SizedBox(height: 10),
+  //           SizedBox(
+  //             height: 250,
+  //             child: Container(
+  //               margin:
+  //                   const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+  //               decoration: BoxDecoration(
+  //                 color: Colors.white,
+  //                 borderRadius: BorderRadius.circular(20),
+  //                 boxShadow: const [
+  //                   BoxShadow(
+  //                     color: Colors.black12,
+  //                     blurRadius: 8,
+  //                     offset: Offset(0, 4),
+  //                   ),
+  //                 ],
+  //               ),
+  //               child: PieChart(
+  //                 PieChartData(
+  //                   sections: sections,
+  //                   centerSpaceRadius: 30,
+  //                   sectionsSpace: 2,
+  //                 ),
+  //               ),
+  //             ),
+  //           ),
+  //         ],
+  //       );
+  //     }).toList(),
+  //   );
+  // }
+
   Widget buildPieCharts(List<YearlyFeedbackStats> stats) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -65,29 +140,23 @@ class DashboardView extends GetView<DashboardController> {
           if (stat.positive > 0)
             PieChartSectionData(
               value: stat.positive.toDouble(),
-              title: 'Tích cực\n${stat.positive}',
               color: AppColors.positiveStatColor,
               radius: 70,
-              titleStyle:
-                  const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+              showTitle: false,
             ),
           if (stat.negative > 0)
             PieChartSectionData(
               value: stat.negative.toDouble(),
-              title: 'Tiêu cực\n${stat.negative}',
               color: AppColors.negativeStatColor,
               radius: 70,
-              titleStyle:
-                  const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+              showTitle: false,
             ),
           if (stat.neutral > 0)
             PieChartSectionData(
               value: stat.neutral.toDouble(),
-              title: 'Trung lập\n${stat.neutral}',
               color: AppColors.neutralStatColor,
               radius: 70,
-              titleStyle:
-                  const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+              showTitle: false,
             ),
         ];
 
@@ -95,11 +164,14 @@ class DashboardView extends GetView<DashboardController> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const SizedBox(height: 20),
-            Text('Thống kê số lượng góp ý năm ${stat.year}',
-                style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.bluePrimary.withOpacity(0.8))),
+            Text(
+              'Thống kê số lượng góp ý năm ${stat.year}',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: AppColors.bluePrimary.withOpacity(0.8),
+              ),
+            ),
             const SizedBox(height: 10),
             SizedBox(
               height: 250,
@@ -126,9 +198,51 @@ class DashboardView extends GetView<DashboardController> {
                 ),
               ),
             ),
+
+            // Legend
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                spacing: 16,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    spacing: 16,
+                    children: [
+                      _buildLegendItem(AppColors.positiveStatColor, 'Tích cực',
+                          stat.positive),
+                      _buildLegendItem(AppColors.negativeStatColor, 'Tiêu cực',
+                          stat.negative),
+                    ],
+                  ),
+                  _buildLegendItem(
+                      AppColors.neutralStatColor, 'Trung lập', stat.neutral),
+                ],
+              ),
+            ),
           ],
         );
       }).toList(),
+    );
+  }
+
+  Widget _buildLegendItem(Color color, String label, int value) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 12,
+          height: 12,
+          margin: const EdgeInsets.only(right: 6),
+          decoration: BoxDecoration(
+            color: color,
+            shape: BoxShape.circle,
+          ),
+        ),
+        Text('$label ($value)',
+            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
+      ],
     );
   }
 

@@ -9,22 +9,28 @@ class DashboardRepository {
   Future<List<FeedbackModel>> fetchDashboardData() async {
     List<FeedbackModel> allData = [];
     String? lastId = 'f1-06-23';
-    const int pageSize = 100;
+    const int pageSize = 50;
 
     while (true) {
-      final pageData = await FeedbackService.getAllFeedback(
-        limit: pageSize,
-        startAfterId: lastId,
-      );
+      try {
+        final pageData = await FeedbackService.getAllFeedback(
+          limit: pageSize,
+          startAfterId: lastId,
+        );
 
-      if (pageData.isEmpty) break;
+        if (pageData.isEmpty) break;
 
-      allData.addAll(pageData);
-      lastId =
-          pageData.last.id; // dùng id cuối cùng làm start_after_id tiếp theo
+        allData.addAll(pageData);
+        lastId =
+            pageData.last.id; // dùng id cuối cùng làm start_after_id tiếp theo
 
-      if (pageData.length < pageSize)
-        break; // không đủ trang đầy, đã hết dữ liệu
+        if (pageData.length < pageSize)
+          break; // không đủ trang đầy, đã hết dữ liệu
+        await Future.delayed(Duration(milliseconds: 100));
+      } catch (e) {
+        print('Error fetching feedback data for dashboard: $e');
+        break; // Dừng vòng lặp nếu có lỗi
+      }
     }
 
     return allData;
