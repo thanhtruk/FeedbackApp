@@ -105,10 +105,18 @@ class FeedbackFormController extends GetxController {
             contentController.text: "Tiêu cực",
           }
         ];
-        if (feedback.status == "Đang xử lý") {
-          sendEmail(feedback.field!, contentController.text,
-              feedback.title ?? 'Góp ý từ người dùng');
-        }
+        feedbackFormRepository.submitFeedback(feedback).then((id) {
+          isSending.value = false;
+          sendEmail(
+              feedback.field!,
+              formatClausesAsNumberedListFromListMap(
+                  feedback.clausesSentiment!, contentController.text),
+              feedback.title ?? 'Góp ý từ người dùng',
+              id);
+          showFeedbackSuccessDialog();
+        }).catchError((error) {
+          Get.snackbar("Lỗi", "Không thể gửi góp ý. Vui lòng thử lại sau.");
+        });
       } else {
         //Đánh giá bình thường
         //Tách nội dung thành các mệnh đề
@@ -135,20 +143,22 @@ class FeedbackFormController extends GetxController {
         final hasNegative = feedback.clausesSentiment!
             .any((map) => map.containsValue("Tiêu cực"));
 
-        if (hasNegative && feedback.status == "Đang xử lý") {
-          sendEmail(
-              feedback.field!,
-              formatClausesAsNumberedListFromListMap(
-                  feedback.clausesSentiment!, contentController.text),
-              feedback.title ?? 'Góp ý từ người dùng');
-        }
+        feedbackFormRepository.submitFeedback(feedback).then((id) {
+          isSending.value = false;
+          if (hasNegative && feedback.status == "Đang xử lý") {
+            sendEmail(
+                feedback.field!,
+                formatClausesAsNumberedListFromListMap(
+                    feedback.clausesSentiment!, contentController.text),
+                feedback.title ?? 'Góp ý từ người dùng',
+                id);
+          }
+          isSending.value = false;
+          showFeedbackSuccessDialog();
+        }).catchError((error) {
+          Get.snackbar("Lỗi", "Không thể gửi góp ý. Vui lòng thử lại sau.");
+        });
       }
-      feedbackFormRepository.submitFeedback(feedback).then((value) {
-        isSending.value = false;
-        showFeedbackSuccessDialog();
-      }).catchError((error) {
-        Get.snackbar("Lỗi", "Không thể gửi góp ý. Vui lòng thử lại sau.");
-      });
     } else if (selectedType.value == "Câu hỏi") {
       QuestionModel question = QuestionModel(
         title: titleController.text,
@@ -175,12 +185,11 @@ class FeedbackFormController extends GetxController {
         question.status = "Đang xử lý";
       }
 
-      if (question.status == "Đang xử lý") {
-        sendEmail(question.field!, contentController.text,
-            question.title ?? 'Câu hỏi từ người dùng');
-      }
-
-      feedbackFormRepository.submitQuestion(question).then((value) {
+      feedbackFormRepository.submitQuestion(question).then((id) {
+        if (question.status == "Đang xử lý") {
+          sendEmail(question.field!, contentController.text,
+              question.title ?? 'Câu hỏi từ người dùng', id);
+        }
         isSending.value = false;
         showFeedbackSuccessDialog();
       }).catchError((error) {
@@ -190,7 +199,8 @@ class FeedbackFormController extends GetxController {
   }
 
   //send email
-  Future<void> sendEmail(String field, String message, String subject) async {
+  Future<void> sendEmail(
+      String field, String message, String subject, String id) async {
     switch (field) {
       case "Thủ tục" ||
             "Khảo thí" ||
@@ -199,49 +209,49 @@ class FeedbackFormController extends GetxController {
             "Kế hoạch":
         feedbackFormRepository.sendEmail(SendEmailModel(
           recipient_email: "hsu.pdt23164@gmail.com",
-          message: createEmailFormattedContent(message),
+          message: createEmailFormattedContent(message, id),
           subject: subject,
         ));
         break;
       case "Dịch vụ sinh viên" || "Thực tập":
         feedbackFormRepository.sendEmail(SendEmailModel(
           recipient_email: "hsu.tttnsv23164@gmail.com",
-          message: createEmailFormattedContent(message),
+          message: createEmailFormattedContent(message, id),
           subject: subject,
         ));
         break;
       case "Học phí":
         feedbackFormRepository.sendEmail(SendEmailModel(
           recipient_email: "hsu.hp23164@gmail.com",
-          message: createEmailFormattedContent(message),
+          message: createEmailFormattedContent(message, id),
           subject: subject,
         ));
         break;
       case "Cơ sở vật chất":
         feedbackFormRepository.sendEmail(SendEmailModel(
           recipient_email: "hsu.csvc23164@gmail.com",
-          message: createEmailFormattedContent(message),
+          message: createEmailFormattedContent(message, id),
           subject: subject,
         ));
         break;
       case "Công nghệ thông tin":
         feedbackFormRepository.sendEmail(SendEmailModel(
           recipient_email: "hsu.cntt23164@gmail.com",
-          message: createEmailFormattedContent(message),
+          message: createEmailFormattedContent(message, id),
           subject: subject,
         ));
         break;
       case "Hỗ trợ Học viên Sau đại học":
         feedbackFormRepository.sendEmail(SendEmailModel(
           recipient_email: "hsu.vsdh23164@gmail.com",
-          message: createEmailFormattedContent(message),
+          message: createEmailFormattedContent(message, id),
           subject: subject,
         ));
         break;
       case "Đào tạo trực tuyến":
         feedbackFormRepository.sendEmail(SendEmailModel(
           recipient_email: "hsu.dttt23164@gmail.com",
-          message: createEmailFormattedContent(message),
+          message: createEmailFormattedContent(message, id),
           subject: subject,
         ));
         break;
@@ -251,7 +261,7 @@ class FeedbackFormController extends GetxController {
     }
   }
 
-  String createEmailFormattedContent(String text) {
+  String createEmailFormattedContent(String text, String id) {
     final now = DateTime.now();
     final formattedDate =
         "${now.day.toString().padLeft(2, '0')}/${now.month.toString().padLeft(2, '0')}/${now.year} ${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}";
@@ -263,6 +273,8 @@ class FeedbackFormController extends GetxController {
     <p><b>- Thời gian:</b> $formattedDate</p>
     <hr style="color: black;">
     $text
+    <a href="https://docs.google.com/forms/d/e/1FAIpQLSdXFMX7CLVrRH7gm9NYy-XhgAC3txYi6bbLLJbdhU4Ky-0noQ/viewform?usp=pp_url&entry.1390513214=$id" style="color: blue; text-decoration: underline;">
+  Xử lý feedback tại đây</a>
     <hr>
     <p style="color: gray;">Hệ thống sẽ tiếp tục gửi thông báo khi có nội dung tương tự.</p>
   </body>
