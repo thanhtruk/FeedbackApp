@@ -8,8 +8,8 @@ class DashboardRepository {
   // Example method to fetch dashboard data
   Future<List<FeedbackModel>> fetchDashboardData() async {
     List<FeedbackModel> allData = [];
-    String? lastId = 'f1-06-23';
-    const int pageSize = 50;
+    String? lastId;
+    const int pageSize = 1000;
 
     while (true) {
       try {
@@ -26,7 +26,6 @@ class DashboardRepository {
 
         if (pageData.length < pageSize)
           break; // không đủ trang đầy, đã hết dữ liệu
-        await Future.delayed(Duration(milliseconds: 100));
       } catch (e) {
         print('Error fetching feedback data for dashboard: $e');
         break; // Dừng vòng lặp nếu có lỗi

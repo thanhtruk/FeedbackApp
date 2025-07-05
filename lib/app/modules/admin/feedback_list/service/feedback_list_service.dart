@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:feedback_app/app/modules/admin/feedback_list/models/ExtractKeywordsModel.dart';
 import 'package:http/http.dart' as http;
 
+import '../../../../constants/api.dart';
+
 class FeedbackListService {
   // This class can be used to implement methods related to feedback list operations
   // such as fetching, adding, updating, or deleting feedback entries.
@@ -10,7 +12,7 @@ class FeedbackListService {
   // Example method to fetch feedbacks
   Future<ExtractKeywordsModel> extractKeywords(String text) async {
     // Simulate a network call or database query
-    final url = Uri.parse('http://10.0.2.2:8000/extract/keyword');
+    final url = Uri.parse('${API.baseUrl}/extract/keyword');
 
     final headers = {'Content-Type': 'application/json'};
     final body = jsonEncode({'text': text});

@@ -3,16 +3,18 @@ import 'dart:convert';
 import 'package:feedback_app/app/models/feedback_model.dart';
 import 'package:http/http.dart' as http;
 
+import '../constants/api.dart';
+
 class FeedbackService {
   // Example method to retrieve feedback
   static Future<List<FeedbackModel>> getAllFeedback({
     int limit = 10,
-    String? startAfterId = 'f1-06-23',
+    String? startAfterId,
   }) async {
     // Gắn query parameters vào URI
     final uri = Uri.http(
-      '10.0.2.2:5000',
-      '/feedback',
+      API.baseUrl.replaceFirst('https://', ''), // Remove 'http://' for Uri
+      '/feedback/',
       {
         'limit': limit.toString(),
         'start_after_id': startAfterId,
@@ -38,7 +40,7 @@ class FeedbackService {
 
   // Example method to retrieve feedback by ID
   static Future<FeedbackModel?> getFeedbackById(String id) async {
-    final url = Uri.parse('http://10.0.2.2:5000/feedback/$id');
+    final url = Uri.parse('${API.baseUrl}/feedback/$id');
 
     try {
       final response = await http.get(url);

@@ -22,6 +22,7 @@ class HomeView extends GetView<HomeController> {
         ),
         backgroundColor: AppColors.bluePrimary,
         centerTitle: true,
+        iconTheme: IconThemeData(color: AppColors.lightWhite),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

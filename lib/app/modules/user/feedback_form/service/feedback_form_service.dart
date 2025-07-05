@@ -7,6 +7,7 @@ import 'package:feedback_app/app/modules/user/feedback_form/models/send_email_mo
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 
+import '../../../../constants/api.dart';
 import '../../../../models/feedback_model.dart';
 import '../models/clauses_model.dart';
 import '../models/field_model.dart';
@@ -14,7 +15,7 @@ import '../models/sentiment_model.dart';
 
 class FeedbackFormService {
   static Future<Field> detectFieldFromText(String text) async {
-    final url = Uri.parse('http://10.0.2.2:8000/field/detect');
+    final url = Uri.parse('${API.baseUrl}/field/detect');
 
     final headers = {'Content-Type': 'application/json'};
     final body = jsonEncode({'text': text});
@@ -35,7 +36,7 @@ class FeedbackFormService {
   }
 
   static Future<Sarcasm> detectSarcasmFromText(String text) async {
-    final url = Uri.parse('http://10.0.2.2:8000/sarcasm/predict');
+    final url = Uri.parse('${API.baseUrl}/sarcasm/predict');
 
     final headers = {'Content-Type': 'application/json'};
     final body = jsonEncode({'text': text});
@@ -56,7 +57,7 @@ class FeedbackFormService {
   }
 
   static Future<Clauses> splitTextIntoClauses(String text) async {
-    final url = Uri.parse('http://10.0.2.2:8000/clause/split');
+    final url = Uri.parse('${API.baseUrl}/clause/split');
 
     final headers = {'Content-Type': 'application/json'};
     final body = jsonEncode({'text': text});
@@ -77,7 +78,7 @@ class FeedbackFormService {
   }
 
   static Future<Sentiment> detectSentimentFromText(String text) async {
-    final url = Uri.parse('http://10.0.2.2:8000/sentiment/predict');
+    final url = Uri.parse('${API.baseUrl}/sentiment/predict');
 
     final headers = {'Content-Type': 'application/json'};
     final body = jsonEncode({'text': text});
@@ -98,7 +99,7 @@ class FeedbackFormService {
   }
 
   static Future<String> submitFeedback(FeedbackModel feedback) async {
-    final url = Uri.parse('http://10.0.2.2:5000/feedback');
+    final url = Uri.parse('${API.baseUrl}/feedback/');
 
     final headers = {'Content-Type': 'application/json'};
     final body = jsonEncode(feedback.toJson());
@@ -119,7 +120,7 @@ class FeedbackFormService {
   }
 
   static Future<String> submitQuestion(QuestionModel question) async {
-    final url = Uri.parse('http://10.0.2.2:5000/question');
+    final url = Uri.parse('${API.baseUrl}/question');
 
     final headers = {'Content-Type': 'application/json'};
     final body = jsonEncode(question.toJson());
@@ -140,7 +141,7 @@ class FeedbackFormService {
   }
 
   static Future<List<String>> sendEmail(SendEmailModel infor) async {
-    final url = Uri.parse('http://10.0.2.2:8000/send-email');
+    final url = Uri.parse('${API.baseUrl}/send-email');
 
     final headers = {'Content-Type': 'application/json'};
     final body = jsonEncode(infor.toJson());
@@ -174,7 +175,7 @@ class FeedbackFormService {
 Bạn là một trợ lý xử lý ngôn ngữ tiếng Việt.
 
 Thực hiện các bước sau với dữ liệu đánh giá phía dưới:
-1. Sửa lỗi chính tả.
+1. Sửa lỗi chính tả, loại bỏ các ký tự đặc biệt, icon.
 3. Dịch sang tiếng Việt hoàn toàn, kể cả các từ mượn như teacher, lecturer, phòng lab...
 
 Trả về kết quả là đánh giá đã xử lý (không giải thích gì thêm)

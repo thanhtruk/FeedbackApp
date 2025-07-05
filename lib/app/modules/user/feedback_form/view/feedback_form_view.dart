@@ -45,7 +45,7 @@ class FeedbackFormView extends GetView<FeedbackFormController> {
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                   ),
-                  hint: const Text('Chọn lĩnh loại phản hồi'),
+                  hint: const Text('Chọn loại phản hồi'),
                   items: feedbackTypes.map((label) {
                     return DropdownMenuItem(
                       child: Text(label),
@@ -96,7 +96,7 @@ class FeedbackFormView extends GetView<FeedbackFormController> {
                     border: OutlineInputBorder(),
                   ),
                 ),
-                SizedBox(height: MediaQuery.of(context).size.height - 690),
+                SizedBox(height: MediaQuery.of(context).size.height - 720),
                 Row(
                   children: [
                     Checkbox(
