@@ -24,7 +24,10 @@ void showFeedbackSuccessDialog(String text) {
       ),
       actions: [
         CupertinoDialogAction(
-          onPressed: () => Get.back(),
+          onPressed: () {
+            Get.back();
+            Get.back();
+          },
           isDefaultAction: true,
           child: Text(
             'Đồng ý',

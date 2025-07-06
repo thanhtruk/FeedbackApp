@@ -1,17 +1,20 @@
-import '../../../../constants/api.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'package:http/http.dart' as http;
+
+import '../../../../constants/api.dart';
+import '../../../../models/feedback_model.dart';
+
 class FeedbackHandleService {
-  static Future<void> submitResponse(String response, String id) async {
+  static Future<void> submitResponse(FeedbackModel feedback) async {
     // Logic to handle feedback submission
-    final url = Uri.parse('${API.baseUrl}/feedback/$id');
+    final url = Uri.parse('${API.baseUrl}/feedback/${feedback.id}');
     final headers = {'Content-Type': 'application/json'};
 
     final body = {
-      'response': response,
+      'response': feedback.response,
       'status':
-          'Đã xử lý', // Assuming status is set to 'handled' after response
+          feedback.status, // Assuming status is set to 'handled' after response
     };
 
     try {
@@ -35,15 +38,15 @@ class FeedbackHandleService {
     }
   }
 
-  static Future<void> submitFieldSelection(String field, String id) async {
+  static Future<void> submitFieldSelection(FeedbackModel feedback) async {
     // Logic to handle feedback submission
-    final url = Uri.parse('${API.baseUrl}/feedback/$id');
+    final url = Uri.parse('${API.baseUrl}/feedback/${feedback.id}');
     final headers = {'Content-Type': 'application/json'};
 
     final body = {
-      'field': field,
+      'field': feedback.field,
       'status':
-          'Đang xử lý', // Assuming status is set to 'handled' after response
+          feedback.status, // Assuming status is set to 'handled' after response
     };
 
     try {

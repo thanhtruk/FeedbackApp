@@ -1,6 +1,7 @@
 import 'package:feedback_app/app/models/question_model.dart';
 import 'package:feedback_app/app/modules/user/feedback_form/models/sarcasm_model.dart';
 import 'package:feedback_app/app/modules/user/feedback_form/repository/feedback_form_repository.dart';
+import 'package:feedback_app/app/modules/user/home/controller/home_controller.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -15,6 +16,7 @@ import '../models/sentiment_model.dart';
 class FeedbackFormController extends GetxController {
   FeedbackFormRepository feedbackFormRepository =
       Get.find<FeedbackFormRepository>();
+  HomeController homeController = Get.find<HomeController>();
   final title = ''.obs;
   final content = ''.obs;
   final selectedField = RxnString();
@@ -106,7 +108,8 @@ class FeedbackFormController extends GetxController {
             cleanedContent: "Tiêu cực",
           }
         ];
-        feedbackFormRepository.submitFeedback(feedback).then((id) {
+        await feedbackFormRepository.submitFeedback(feedback).then((id) {
+          feedback.id = id;
           isSending.value = false;
           sendEmail(
               feedback.field!,
@@ -119,6 +122,8 @@ class FeedbackFormController extends GetxController {
         }).catchError((error) {
           Get.snackbar("Lỗi", "Không thể gửi góp ý. Vui lòng thử lại sau.");
         });
+        print(feedback.id);
+        homeController.feedbackList.insert(0, feedback);
       } else {
         //Đánh giá bình thường
         //Tách nội dung thành các mệnh đề
@@ -145,7 +150,8 @@ class FeedbackFormController extends GetxController {
         final hasNegative = feedback.clausesSentiment!
             .any((map) => map.containsValue("Tiêu cực"));
 
-        feedbackFormRepository.submitFeedback(feedback).then((id) {
+        await feedbackFormRepository.submitFeedback(feedback).then((id) {
+          feedback.id = id;
           isSending.value = false;
           if (hasNegative && feedback.status == "Đang xử lý") {
             sendEmail(
@@ -161,6 +167,8 @@ class FeedbackFormController extends GetxController {
         }).catchError((error) {
           Get.snackbar("Lỗi", "Không thể gửi góp ý. Vui lòng thử lại sau.");
         });
+        // Thêm vào dau danh sách phản ánh
+        homeController.feedbackList.insert(0, feedback);
       }
     } else if (selectedType.value == "Câu hỏi") {
       QuestionModel question = QuestionModel(
@@ -188,11 +196,12 @@ class FeedbackFormController extends GetxController {
         question.status = "Đang xử lý";
       }
 
-      feedbackFormRepository.submitQuestion(question).then((id) {
+      await feedbackFormRepository.submitQuestion(question).then((id) {
         if (question.status == "Đang xử lý") {
           sendEmail(question.field!, contentController.text,
               question.title ?? 'Câu hỏi từ người dùng', id);
         }
+
         isSending.value = false;
         showFeedbackSuccessDialog(
             'Góp ý của bạn đã được gửi tới bộ phận liên quan, vui lòng theo dõi thông báo phản hồi. Cảm ơn bạn rất nhiều.');

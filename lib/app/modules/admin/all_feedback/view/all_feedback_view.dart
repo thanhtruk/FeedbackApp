@@ -34,35 +34,36 @@ class AllFeedbackView extends GetView<AllFeedbackController> {
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: TabBarView(
-          controller: controller.tabController,
-          children: controller.statusList.map((status) {
-            final filtered = controller.getFilteredList(status);
-            if (filtered.isEmpty) {
-              return Center(child: Text('Không có góp ý nào.'));
-            }
-            return ListView.builder(
-              itemCount: filtered.length,
-              itemBuilder: (_, index) {
-                final item = filtered[index];
-                return Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: GestureDetector(
-                    child: FeedbackCard(feedback: item),
-                    onTap: () {
-                      Get.toNamed(
-                        AppRoutes.ADMIN_FEEDBACK_HANDLE,
-                        arguments: {'feedback': item},
-                      );
-                    },
-                  ),
+          padding: const EdgeInsets.all(16.0),
+          child: TabBarView(
+            controller: controller.tabController,
+            children: controller.statusList.map((status) {
+              return Obx(() {
+                final filtered = controller.getFilteredList(status);
+                if (filtered.isEmpty) {
+                  return Center(child: Text('Không có góp ý nào.'));
+                }
+                return ListView.builder(
+                  itemCount: filtered.length,
+                  itemBuilder: (_, index) {
+                    final item = filtered[index];
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: GestureDetector(
+                        child: FeedbackCard(feedback: item),
+                        onTap: () {
+                          Get.toNamed(
+                            AppRoutes.ADMIN_FEEDBACK_HANDLE,
+                            arguments: {'feedback': item},
+                          );
+                        },
+                      ),
+                    );
+                  },
                 );
-              },
-            );
-          }).toList(),
-        ),
-      ),
+              });
+            }).toList(),
+          )),
     );
   }
 }

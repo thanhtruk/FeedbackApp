@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 import '../constants/api.dart';
 
 class EmailService {
-  static Future<List<String>> sendEmail(SendEmailModel infor) async {
+  static Future<void> sendEmail(SendEmailModel infor) async {
     final url = Uri.parse('${API.baseUrl}/send-email');
 
     final headers = {'Content-Type': 'application/json'};
@@ -17,14 +17,12 @@ class EmailService {
       final response = await http.post(url, headers: headers, body: body);
 
       if (response.statusCode == 200) {
-        return List<String>.from(jsonDecode(response.body));
+        print('[Send Email] Success: ${response.body}');
       } else {
-        print('Error: ${response.statusCode} - ${response.body}');
-        return [];
+        print('[Send Email] Error: ${response.statusCode} - ${response.body}');
       }
     } catch (e) {
-      print('Exception: $e');
-      return [];
+      print('[Send Email] Exception: $e');
     }
   }
 }

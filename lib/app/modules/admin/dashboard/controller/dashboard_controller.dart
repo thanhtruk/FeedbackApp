@@ -9,7 +9,7 @@ class DashboardController extends GetxController {
   final DashboardRepository dashboardRepository =
       Get.find<DashboardRepository>();
 
-  final feedbackList = <FeedbackModel>[].obs;
+  RxList<FeedbackModel> feedbackList = <FeedbackModel>[].obs;
 
   @override
   void onInit() {

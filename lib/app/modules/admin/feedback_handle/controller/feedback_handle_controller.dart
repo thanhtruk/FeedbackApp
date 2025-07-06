@@ -1,3 +1,4 @@
+import 'package:feedback_app/app/modules/admin/all_feedback/controller/all_feedback_controller.dart';
 import 'package:feedback_app/app/modules/admin/feedback_handle/repository/feedback_handle_repository.dart';
 import 'package:feedback_app/app/utils/send_email.dart';
 import 'package:feedback_app/app/utils/show_success_dialog.dart';
@@ -10,6 +11,8 @@ class FeedbackHandleController extends GetxController {
   final Rx<FeedbackModel?> selectedFeedback = Rx<FeedbackModel?>(null);
   final FeedbackHandleRepository feedbackHandleRepository =
       Get.find<FeedbackHandleRepository>();
+  final AllFeedbackController allFeedbackController =
+      Get.find<AllFeedbackController>();
 
   final responseController = TextEditingController();
 
@@ -39,52 +42,58 @@ class FeedbackHandleController extends GetxController {
   }
 
   Future<void> submitFieldSelection() async {
-    if (selectedFeedback.value != null) {
-      await feedbackHandleRepository
-          .submitFieldSelection(
-        selectedField.value,
-        selectedFeedback.value!.id!,
-      )
-          .then((_) async {
-        if (selectedFeedback.value!.id![0] == 'f') {
-          await sendEmail(
-            selectedField.value,
-            formatClausesAsNumberedListFromListMap(
-                selectedFeedback.value!.clausesSentiment!,
-                selectedFeedback.value!.content!),
-            selectedFeedback.value!.title!,
-            selectedFeedback.value!.id!,
-          );
-        } else if (selectedFeedback.value!.id![0] == 'q') {
-          await sendEmail(
-            selectedField.value,
-            selectedFeedback.value!.content!,
-            selectedFeedback.value!.title!,
-            selectedFeedback.value!.id!,
-          );
-        }
-        Get.back();
-        showFeedbackSuccessDialog(
-            'Cập nhật lĩnh vực xử lý thành công. Hệ thống đã gửi email thông báo đến bộ phận liên quan.');
-      }).catchError((error) {
-        Get.snackbar('Error', 'Failed to submit field selection: $error');
-      });
+    if (selectedField.value.isEmpty) {
+      Get.snackbar('Error', 'Please select a field');
+      return;
+    }
+    selectedFeedback.value!.field = selectedField.value;
+    final hasNegative = selectedFeedback.value!.clausesSentiment!
+        .any((map) => map.containsValue("Tiêu cực"));
+    print('Selected field: ${selectedField.value}, hasNegative: $hasNegative');
+    if (hasNegative) {
+      selectedFeedback.value!.status = 'Đang xử lý';
 
-      Get.back();
+      if (selectedFeedback.value!.id![0] == 'f') {
+        await sendEmail(
+          selectedField.value,
+          formatClausesAsNumberedListFromListMap(
+              selectedFeedback.value!.clausesSentiment!,
+              selectedFeedback.value!.content!),
+          selectedFeedback.value!.title!,
+          selectedFeedback.value!.id!,
+        );
+      } else if (selectedFeedback.value!.id![0] == 'q') {
+        await sendEmail(
+          selectedField.value,
+          selectedFeedback.value!.content!,
+          selectedFeedback.value!.title!,
+          selectedFeedback.value!.id!,
+        );
+      }
     } else {
-      Get.snackbar('Error', 'No feedback selected');
+      selectedFeedback.value!.status = 'Đã xử lý';
+    }
+    allFeedbackController.feedbackList.refresh();
+    try {
+      await feedbackHandleRepository.submitFieldSelection(
+        selectedFeedback.value!,
+      );
+      showFeedbackSuccessDialog(
+          'Cập nhật lĩnh vực xử lý thành công. Hệ thống đã gửi email thông báo đến bộ phận liên quan.');
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to update field selection: $e');
     }
   }
 
   Future<void> submitResponse() async {
-    if (selectedFeedback.value != null) {
-      await feedbackHandleRepository.submitResponse(
-        responseController.text,
-        selectedFeedback.value!.id!,
-      );
-      Get.back();
-    } else {
-      Get.snackbar('Error', 'No feedback selected');
+    if (responseController.text.isEmpty) {
+      Get.snackbar('Error', 'Please enter a response');
+      return;
     }
+    selectedFeedback.value!.response = responseController.text;
+    selectedFeedback.value!.status = 'Đã xử lý';
+    allFeedbackController.feedbackList.refresh();
+    await feedbackHandleRepository.submitResponse(selectedFeedback.value!);
+    showFeedbackSuccessDialog('Cập nhật phản hồi thành công.');
   }
 }

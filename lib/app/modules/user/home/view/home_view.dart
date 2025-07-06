@@ -27,6 +27,7 @@ class HomeView extends GetView<HomeController> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Obx(() {
+          print('Feedback list length: ${controller.feedbackList.length}');
           if (controller.isLoading.value) {
             return Center(
               child: CircularProgressIndicator(
