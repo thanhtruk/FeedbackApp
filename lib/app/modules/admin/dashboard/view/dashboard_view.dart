@@ -30,7 +30,7 @@ class DashboardView extends GetView<DashboardController> {
         child: Column(
           children: [
             Obx(() {
-              return controller.issues.isEmpty
+              return controller.feedbackList.isEmpty
                   ? Center(child: CircularProgressIndicator())
                   : buildPieCharts(controller.yearlyFeedbackStats);
             }),
@@ -42,7 +42,10 @@ class DashboardView extends GetView<DashboardController> {
                 backgroundColor: AppColors.bluePrimary,
                 minimumSize: Size(double.infinity, 48),
               ),
-              onPressed: () {},
+              onPressed: () {
+                Get.toNamed(AppRoutes.ADMIN_ALL_FEEDBACK,
+                    arguments: controller.feedbackList);
+              },
               child: Text(
                 'Xem tất cả Góp ý',
                 style: TextStyle(

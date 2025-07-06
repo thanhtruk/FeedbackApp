@@ -9,13 +9,13 @@ class DashboardController extends GetxController {
   final DashboardRepository dashboardRepository =
       Get.find<DashboardRepository>();
 
-  final issues = <FeedbackModel>[].obs;
+  final feedbackList = <FeedbackModel>[].obs;
 
   @override
   void onInit() {
     super.onInit();
     dashboardRepository.fetchDashboardData().then((data) {
-      issues.assignAll(data);
+      feedbackList.assignAll(data);
       update(); // Cập nhật giao diện sau khi dữ liệu được tải
     });
   }
@@ -23,7 +23,7 @@ class DashboardController extends GetxController {
   List<TopIssueGroup> get topIssueGroups {
     final Map<String, Map<String, List<FeedbackModel>>> grouped = {};
 
-    for (var issue in issues) {
+    for (var issue in feedbackList) {
       if (issue.status != 'Đã xử lý' &&
           issue.field != null &&
           issue.fieldDetails != null) {
@@ -59,7 +59,7 @@ class DashboardController extends GetxController {
     final Map<String, Map<String, int>> statsMap =
         {}; // year -> sentiment -> count
 
-    for (var issue in issues) {
+    for (var issue in feedbackList) {
       final dateStr = issue.createdAt ?? '';
       final year = DateTime.tryParse(dateStr)?.year.toString() ?? 'Khác';
       if (year == 'Khác') {
