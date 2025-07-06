@@ -6,6 +6,8 @@ import 'package:feedback_app/app/modules/login/binding/login_binding.dart';
 import 'package:get/get.dart';
 
 import '../modules/admin/all_feedback/view/all_feedback_view.dart';
+import '../modules/admin/feedback_handle/binding/feedback_handle_binding.dart';
+import '../modules/admin/feedback_handle/view/feedback_handle_view.dart';
 import '../modules/admin/feedback_list/binding/feedback_list_binding.dart';
 import '../modules/login/view/login_view.dart';
 import '../modules/user/feedback_detail/binding/feedback_detail_binding.dart';
@@ -57,6 +59,11 @@ class AppPages {
       name: AppRoutes.ADMIN_ALL_FEEDBACK,
       page: () => AllFeedbackView(), // Placeholder for admin all feedback
       binding: AllFeedbackBinding(), // Assuming the same binding as home
+    ),
+    GetPage(
+      name: AppRoutes.ADMIN_FEEDBACK_HANDLE,
+      page: () => FeedbackHandleView(), // Placeholder for admin feedback handle
+      binding: FeedbackHandleBinding(), // Assuming the same binding as home
     ),
   ];
 }

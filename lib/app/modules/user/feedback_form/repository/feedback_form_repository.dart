@@ -1,4 +1,4 @@
-import 'package:feedback_app/app/modules/user/feedback_form/models/send_email_model.dart';
+import 'package:feedback_app/app/models/send_email_model.dart';
 
 import '../../../../models/feedback_model.dart';
 import '../../../../models/question_model.dart';

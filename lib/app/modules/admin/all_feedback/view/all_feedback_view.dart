@@ -52,8 +52,8 @@ class AllFeedbackView extends GetView<AllFeedbackController> {
                     child: FeedbackCard(feedback: item),
                     onTap: () {
                       Get.toNamed(
-                        AppRoutes.FEEDBACK_DETAIL,
-                        arguments: {'id': item.id},
+                        AppRoutes.ADMIN_FEEDBACK_HANDLE,
+                        arguments: {'feedback': item},
                       );
                     },
                   ),

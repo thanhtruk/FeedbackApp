@@ -6,9 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../../models/feedback_model.dart';
+import '../../../../utils/send_email.dart';
+import '../../../../utils/show_success_dialog.dart';
 import '../models/clauses_model.dart';
 import '../models/field_model.dart';
-import '../models/send_email_model.dart';
 import '../models/sentiment_model.dart';
 
 class FeedbackFormController extends GetxController {
@@ -102,7 +103,7 @@ class FeedbackFormController extends GetxController {
         //Đánh giá mỉa mai
         feedback.clausesSentiment = [
           {
-            contentController.text: "Tiêu cực",
+            cleanedContent: "Tiêu cực",
           }
         ];
         feedbackFormRepository.submitFeedback(feedback).then((id) {
@@ -113,7 +114,8 @@ class FeedbackFormController extends GetxController {
                   feedback.clausesSentiment!, contentController.text),
               feedback.title ?? 'Góp ý từ người dùng',
               id);
-          showFeedbackSuccessDialog();
+          showFeedbackSuccessDialog(
+              'Góp ý của bạn đã được gửi tới bộ phận liên quan, vui lòng theo dõi thông báo phản hồi. Cảm ơn bạn rất nhiều.');
         }).catchError((error) {
           Get.snackbar("Lỗi", "Không thể gửi góp ý. Vui lòng thử lại sau.");
         });
@@ -154,7 +156,8 @@ class FeedbackFormController extends GetxController {
                 id);
           }
           isSending.value = false;
-          showFeedbackSuccessDialog();
+          showFeedbackSuccessDialog(
+              'Góp ý của bạn đã được gửi tới bộ phận liên quan, vui lòng theo dõi thông báo phản hồi. Cảm ơn bạn rất nhiều.');
         }).catchError((error) {
           Get.snackbar("Lỗi", "Không thể gửi góp ý. Vui lòng thử lại sau.");
         });
@@ -191,161 +194,12 @@ class FeedbackFormController extends GetxController {
               question.title ?? 'Câu hỏi từ người dùng', id);
         }
         isSending.value = false;
-        showFeedbackSuccessDialog();
+        showFeedbackSuccessDialog(
+            'Góp ý của bạn đã được gửi tới bộ phận liên quan, vui lòng theo dõi thông báo phản hồi. Cảm ơn bạn rất nhiều.');
       }).catchError((error) {
         Get.snackbar("Lỗi", "Không thể gửi câu hỏi. Vui lòng thử lại sau.");
       });
     }
-  }
-
-  //send email
-  Future<void> sendEmail(
-      String field, String message, String subject, String id) async {
-    switch (field) {
-      case "Thủ tục" ||
-            "Khảo thí" ||
-            "Xét tốt nghiệp" ||
-            "Giáo vụ" ||
-            "Kế hoạch":
-        feedbackFormRepository.sendEmail(SendEmailModel(
-          recipient_email: "hsu.pdt23164@gmail.com",
-          message: createEmailFormattedContent(message, id),
-          subject: subject,
-        ));
-        break;
-      case "Dịch vụ sinh viên" || "Thực tập":
-        feedbackFormRepository.sendEmail(SendEmailModel(
-          recipient_email: "hsu.tttnsv23164@gmail.com",
-          message: createEmailFormattedContent(message, id),
-          subject: subject,
-        ));
-        break;
-      case "Học phí":
-        feedbackFormRepository.sendEmail(SendEmailModel(
-          recipient_email: "hsu.hp23164@gmail.com",
-          message: createEmailFormattedContent(message, id),
-          subject: subject,
-        ));
-        break;
-      case "Cơ sở vật chất":
-        feedbackFormRepository.sendEmail(SendEmailModel(
-          recipient_email: "hsu.csvc23164@gmail.com",
-          message: createEmailFormattedContent(message, id),
-          subject: subject,
-        ));
-        break;
-      case "Công nghệ thông tin":
-        feedbackFormRepository.sendEmail(SendEmailModel(
-          recipient_email: "hsu.cntt23164@gmail.com",
-          message: createEmailFormattedContent(message, id),
-          subject: subject,
-        ));
-        break;
-      case "Hỗ trợ Học viên Sau đại học":
-        feedbackFormRepository.sendEmail(SendEmailModel(
-          recipient_email: "hsu.vsdh23164@gmail.com",
-          message: createEmailFormattedContent(message, id),
-          subject: subject,
-        ));
-        break;
-      case "Đào tạo trực tuyến":
-        feedbackFormRepository.sendEmail(SendEmailModel(
-          recipient_email: "hsu.dttt23164@gmail.com",
-          message: createEmailFormattedContent(message, id),
-          subject: subject,
-        ));
-        break;
-      default:
-        print("Không có email liên hệ cho lĩnh vực này: $field");
-        break;
-    }
-  }
-
-  String createEmailFormattedContent(String text, String id) {
-    final now = DateTime.now();
-    final formattedDate =
-        "${now.day.toString().padLeft(2, '0')}/${now.month.toString().padLeft(2, '0')}/${now.year} ${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}";
-
-    return '''
-  <html>
-  <body style="font-family: Arial, sans-serif; color: #333;">
-    <h4 style="color: black;">BÁO CÁO GÓP Ý / CÂU HỎI CẦN XỬ LÝ</h4>
-    <p><b>- Thời gian:</b> $formattedDate</p>
-    <hr style="color: black;">
-    $text
-    <a href="https://docs.google.com/forms/d/e/1FAIpQLSdXFMX7CLVrRH7gm9NYy-XhgAC3txYi6bbLLJbdhU4Ky-0noQ/viewform?usp=pp_url&entry.1390513214=$id" style="color: blue; text-decoration: underline;">
-  Xử lý feedback tại đây</a>
-    <hr>
-    <p style="color: gray;">Hệ thống sẽ tiếp tục gửi thông báo khi có nội dung tương tự.</p>
-  </body>
-  </html>
-  ''';
-  }
-
-  String formatClausesAsNumberedListFromListMap(
-      List<Map<String, String>> listMap, String originalText) {
-    String result = '';
-
-    result += '<h4 style="color: black;">- Bản gốc:</h4>\n';
-    result +=
-        '<p style="color: black;">${originalText.replaceAll('\n', '<br>')}</p>\n';
-
-    result += '<h4 style="color: black;">- Các mệnh đề và cảm xúc:</h4>\n';
-    result += '<ol>\n';
-
-    for (var item in listMap) {
-      item.forEach((clause, sentiment) {
-        final isNegative = sentiment.toLowerCase().contains("tiêu cực");
-        final emoji = isNegative ? '❗' : '';
-        final style = isNegative
-            ? 'color:red; font-weight:bold;'
-            : 'color:green; font-weight:bold;';
-        result +=
-            '<li style="color: black;">$clause: <span style="$style">$emoji $sentiment</span></li>\n';
-      });
-    }
-
-    result += '</ol>\n';
-
-    return result;
-  }
-
-  void showFeedbackSuccessDialog() {
-    showCupertinoDialog(
-      context: Get.context!,
-      builder: (_) => CupertinoAlertDialog(
-        title: Text(
-          'Góp ý đã được gửi',
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 17,
-          ),
-        ),
-        content: Padding(
-          padding: const EdgeInsets.only(top: 8.0),
-          child: Text(
-            'Góp ý của bạn đã được gửi tới bộ phận liên quan, vui lòng theo dõi thông báo phản hồi. Cảm ơn bạn rất nhiều.',
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-        ),
-        actions: [
-          CupertinoDialogAction(
-            onPressed: () => Get.back(),
-            isDefaultAction: true,
-            child: Text(
-              'Đồng ý',
-              style: TextStyle(
-                fontSize: 16,
-                color: CupertinoColors.activeBlue,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
   }
 
   void showIsSendingDialog() {

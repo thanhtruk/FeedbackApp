@@ -8,4 +8,5 @@ abstract class AppRoutes {
   static const ADMIN_DASHBOARD = '/admin-dashboard';
   static const ADMIN_FEEDBACK_LIST = '/admin-feedback-list';
   static const ADMIN_ALL_FEEDBACK = '/admin-all-feedback';
+  static const ADMIN_FEEDBACK_HANDLE = '/admin-feedback-handle';
 }
