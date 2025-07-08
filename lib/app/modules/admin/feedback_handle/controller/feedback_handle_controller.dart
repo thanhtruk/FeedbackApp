@@ -11,8 +11,7 @@ class FeedbackHandleController extends GetxController {
   final Rx<FeedbackModel?> selectedFeedback = Rx<FeedbackModel?>(null);
   final FeedbackHandleRepository feedbackHandleRepository =
       Get.find<FeedbackHandleRepository>();
-  final AllFeedbackController allFeedbackController =
-      Get.find<AllFeedbackController>();
+  AllFeedbackController? allFeedbackController;
 
   final responseController = TextEditingController();
 
@@ -36,6 +35,9 @@ class FeedbackHandleController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    if (Get.isRegistered<AllFeedbackController>()) {
+      allFeedbackController = Get.find<AllFeedbackController>();
+    }
     if (Get.arguments != null) {
       selectedFeedback.value = Get.arguments['feedback'] as FeedbackModel?;
     }
@@ -73,7 +75,9 @@ class FeedbackHandleController extends GetxController {
     } else {
       selectedFeedback.value!.status = 'Đã xử lý';
     }
-    allFeedbackController.feedbackList.refresh();
+    if (allFeedbackController != null) {
+      allFeedbackController!.feedbackList.refresh();
+    }
     try {
       await feedbackHandleRepository.submitFieldSelection(
         selectedFeedback.value!,
@@ -92,7 +96,9 @@ class FeedbackHandleController extends GetxController {
     }
     selectedFeedback.value!.response = responseController.text;
     selectedFeedback.value!.status = 'Đã xử lý';
-    allFeedbackController.feedbackList.refresh();
+    if (allFeedbackController != null) {
+      allFeedbackController!.feedbackList.refresh();
+    }
     await feedbackHandleRepository.submitResponse(selectedFeedback.value!);
     showFeedbackSuccessDialog('Cập nhật phản hồi thành công.');
   }

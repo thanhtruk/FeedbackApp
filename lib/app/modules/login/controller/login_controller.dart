@@ -8,8 +8,8 @@ class LoginController extends GetxController {
   final isLoading = false.obs;
 
   final userAccounts = {
-    'user': 'user123',
-    'admin': 'admin123',
+    'truc.pt23164': '123456',
+    'admin': '123456',
   };
 
   void login() {

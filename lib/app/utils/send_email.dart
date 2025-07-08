@@ -70,35 +70,35 @@ Future<void> sendEmail(
       break;
     case "Học phí":
       EmailService.sendEmail(SendEmailModel(
-        recipient_email: "hsu.hp23164@gmail.com",
+        recipient_email: "sylviapham23@gmail.com",
         message: createEmailFormattedContent(message, id),
         subject: subject,
       ));
       break;
     case "Cơ sở vật chất":
       EmailService.sendEmail(SendEmailModel(
-        recipient_email: "hsu.csvc23164@gmail.com",
+        recipient_email: "thanh.truc.pham.782003@gmail.com",
         message: createEmailFormattedContent(message, id),
         subject: subject,
       ));
       break;
     case "Công nghệ thông tin":
       EmailService.sendEmail(SendEmailModel(
-        recipient_email: "hsu.cntt23164@gmail.com",
+        recipient_email: "hanqhoa01@gmail.com",
         message: createEmailFormattedContent(message, id),
         subject: subject,
       ));
       break;
     case "Hỗ trợ Học viên Sau đại học":
       EmailService.sendEmail(SendEmailModel(
-        recipient_email: "hsu.vsdh23164@gmail.com",
+        recipient_email: "hanqhoa02@gmail.com",
         message: createEmailFormattedContent(message, id),
         subject: subject,
       ));
       break;
     case "Đào tạo trực tuyến":
       EmailService.sendEmail(SendEmailModel(
-        recipient_email: "hsu.dttt23164@gmail.com",
+        recipient_email: "trukstudy01@gmail.com",
         message: createEmailFormattedContent(message, id),
         subject: subject,
       ));
