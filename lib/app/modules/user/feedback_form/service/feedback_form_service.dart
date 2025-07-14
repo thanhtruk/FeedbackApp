@@ -175,7 +175,7 @@ class FeedbackFormService {
 Bạn là một trợ lý xử lý ngôn ngữ tiếng Việt.
 
 Thực hiện các bước sau với dữ liệu đánh giá phía dưới:
-1. Sửa lỗi chính tả, loại bỏ các ký tự đặc biệt, icon.
+1. Sửa lỗi chính tả, viết thường hoàn toàn (lowercase), loại bỏ các ký tự đặc biệt, icon.
 3. Dịch sang tiếng Việt hoàn toàn, kể cả các từ mượn như teacher, lecturer, phòng lab...
 
 Trả về kết quả là đánh giá đã xử lý (không giải thích gì thêm)

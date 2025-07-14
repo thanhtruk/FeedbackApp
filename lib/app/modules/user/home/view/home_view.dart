@@ -26,45 +26,58 @@ class HomeView extends GetView<HomeController> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Obx(() {
-          print('Feedback list length: ${controller.feedbackList.length}');
-          if (controller.isLoading.value) {
-            return Center(
-              child: CircularProgressIndicator(
-                color: AppColors.bluePrimary,
-              ),
-            );
-          }
-          if (controller.feedbackList.isEmpty) {
-            return Center(
-              child: Text(
-                'Không có phản ánh nào',
-                style: TextStyle(
-                  color: AppColors.lightGrey,
-                  fontSize: 16,
-                ),
-              ),
-            );
-          }
-          return ListView.builder(
-            itemCount: controller.feedbackList.length,
-            itemBuilder: (context, index) {
-              final feedback = controller.feedbackList[index];
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 16.0),
-                child: GestureDetector(
-                  child: FeedbackCard(feedback: feedback),
-                  onTap: () {
-                    Get.toNamed(
-                      AppRoutes.FEEDBACK_DETAIL,
-                      arguments: {'feedback': feedback},
-                    );
-                  },
+        child: NotificationListener<ScrollNotification>(
+          onNotification: (ScrollNotification scrollInfo) {
+            if (scrollInfo is OverscrollNotification &&
+                scrollInfo.overscroll < -40) {
+              controller.loadFeedbackData();
+            }
+            return false;
+          },
+          child: Obx(() {
+            if (controller.isLoading.value) {
+              // Lần đầu load trang, chưa có dữ liệu
+              return const Center(
+                child:
+                    CircularProgressIndicator(), // Spinner khi init, dùng theme mặc định
+              );
+            }
+
+            if (controller.feedbackList.isEmpty) {
+              return Center(
+                child: Text(
+                  'Không có phản ánh nào',
+                  style: TextStyle(
+                    color: AppColors.lightGrey,
+                    fontSize: 16,
+                  ),
                 ),
               );
-            },
-          );
-        }),
+            }
+
+            // Danh sách phản ánh
+            return ListView.builder(
+              controller: controller.scrollController,
+              padding: const EdgeInsets.only(top: 12),
+              itemCount: controller.feedbackList.length,
+              itemBuilder: (context, index) {
+                final feedback = controller.feedbackList[index];
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 16.0),
+                  child: GestureDetector(
+                    child: FeedbackCard(feedback: feedback),
+                    onTap: () {
+                      Get.toNamed(
+                        AppRoutes.FEEDBACK_DETAIL,
+                        arguments: {'feedback': feedback},
+                      );
+                    },
+                  ),
+                );
+              },
+            );
+          }),
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {

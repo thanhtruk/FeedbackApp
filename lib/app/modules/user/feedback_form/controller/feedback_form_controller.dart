@@ -92,7 +92,6 @@ class FeedbackFormController extends GetxController {
         feedback.status = "Đang xử lý";
       } else if (selectedField.value != "Khác" &&
           selectedField.value == field.lable) {
-        feedback.field = selectedField.value;
         feedback.status = "Đang xử lý";
       }
 
@@ -111,12 +110,14 @@ class FeedbackFormController extends GetxController {
         await feedbackFormRepository.submitFeedback(feedback).then((id) {
           feedback.id = id;
           isSending.value = false;
-          sendEmail(
-              feedback.field!,
-              formatClausesAsNumberedListFromListMap(
-                  feedback.clausesSentiment!, contentController.text),
-              feedback.title ?? 'Góp ý từ người dùng',
-              id);
+          if (feedback.status == "Đang xử lý") {
+            sendEmail(
+                feedback.field!,
+                formatClausesAsNumberedListFromListMap(
+                    feedback.clausesSentiment!, contentController.text),
+                feedback.title ?? 'Góp ý từ người dùng',
+                id);
+          }
           showFeedbackSuccessDialog(
               'Góp ý của bạn đã được gửi tới bộ phận liên quan, vui lòng theo dõi thông báo phản hồi. Cảm ơn bạn rất nhiều.');
         }).catchError((error) {
@@ -150,10 +151,14 @@ class FeedbackFormController extends GetxController {
         final hasNegative = feedback.clausesSentiment!
             .any((map) => map.containsValue("Tiêu cực"));
 
+        if (!hasNegative) {
+          feedback.status = "Đã xử lý";
+        }
+
         await feedbackFormRepository.submitFeedback(feedback).then((id) {
           feedback.id = id;
           isSending.value = false;
-          if (hasNegative && feedback.status == "Đang xử lý") {
+          if (feedback.status == "Đang xử lý") {
             sendEmail(
                 feedback.field!,
                 formatClausesAsNumberedListFromListMap(

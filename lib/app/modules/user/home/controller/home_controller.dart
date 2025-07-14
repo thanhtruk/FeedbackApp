@@ -1,10 +1,12 @@
 import 'package:feedback_app/app/modules/user/home/repository/home_repository.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 
 import '../../../../models/feedback_model.dart';
 
 class HomeController extends GetxController {
   HomeRepository homeRepository = Get.find<HomeRepository>();
+  final ScrollController scrollController = ScrollController();
 
   final isLoading = true.obs;
 
